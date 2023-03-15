@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta charset="UTF-8">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/reveal.min.css">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/theme/white.min.css" id="theme">
+  </head>
+  <body>
+    <div class="reveal">
+    <div class="slides">
+      <section
+              data-markdown="jour1.md"
+              data-separator="---"
+              data-separator-vertical="==="
+      >
+      </section>
+    </div>
+    </div>
+  </body>
+
+  <script type="module">
+    import Reveal from 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/reveal.esm.min.js';
+    import markdown from 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/plugin/markdown/markdown.esm.min.js';
+
+    Reveal.initialize({
+      plugins: [markdown],
+    });
+  </script>
+</html>
