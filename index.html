@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/theme/league.min.css"
+          id="theme">
+</head>
+<body>
+<div class="reveal">
+    <div class="slides">
+        <section data-markdown>
+        <textarea data-template>
+          # elasticsearch pour les ops
+          ---
+          ## Programme des 3 jours
+
+          ### Jour 1
+            * Introduction à Elasticsearch
+            * Installation et configuration
+            * Indexer des documents, search & update
+            * aggregation ,relevance, field mappings
+
+          ---
+          ### Jour 2
+            * maintenance et monitoring d'un cluster
+            * index lifecycle management
+            * securité & RBAC
+            * logstach, kibana, beats
+
+          ---
+          
+          ### Jours 3
+            * Troubleshooting & debugging
+            * Best practices & perf tuning
+
+        </textarea>
+        </section>
+    </div>
+</div>
+</body>
+
+<script type="module">
+  import Reveal from 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/reveal.esm.min.js'
+  import markdown from 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/plugin/markdown/markdown.esm.min.js'
+
+  Reveal.initialize({
+    plugins: [markdown],
+  })
+</script>
+</html>
