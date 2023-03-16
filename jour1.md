@@ -1,5 +1,7 @@
 # elasticsearch pour les ops
+
 ## Jour 1
+
 ---
 ## Objectifs de la journée
 
@@ -50,6 +52,16 @@ Interface API / REST.
 
 ---
 
+## Cas d'usage d'Elasticsearch
+
+* Recherche "full-text" : recherche dans les applications web, portails, etc...
+* Analyse de logs : agrégation de logs de sources multiples (serveurs/pods...), consultation et analyse
+* Analyse de métriques : agrégation de métriques de sources multiples, consultation et analyse
+* Recherche géospatiale : marketing geolocalisé, suivi de flotte, etc...
+* Recherche de medias
+
+---
+
 ## Définitions & Vocabulaire
 
 > Document :
@@ -71,6 +83,25 @@ Interface API / REST.
 > L'indexation d'un _document_ se fait dans un _index_.
 > La recherche se fait dans un _index_.
 > Les données d'un index sont similaires (les documents ont une structure similaire).
+
+===
+
+> Alias : 
+> 
+> Un nom secondaire pour un _index_ ou un groupe d'_index_.
+> Permet de manipuler des noms constants. 
+> Exemples : Alias `products` > `products.2023.03`. Alias `logs-apache` > `logs-apache-*`
+> Les alias pointent vers les _index_ présents _à la création de l'alias_ (ce n'est pas dynamique)
+> Pratique pour "renommer" des index.
+
+===
+
+> Query :
+> 
+> Une requête sur un _index_, un groupe d'_index_ (ex : `products-*`) ou un alias.
+> Une requête est parsée, envoyée aux index concernés, exécutée par les _shards_. Les résultats sont scorés, puis aggrégés avant d'être reenvoyés.
+> Une requête est traitée dans un _shard_ par un seul thread, néanmoins, chaque _shard_ peut exécuter plusieurs threads en parallèle.
+> Le thread pool de traitement des requêtes est fixé à (((node.processors * 3) / 2) + 1). 2 CPU => 4 threads
 
 ===
 
@@ -109,15 +140,6 @@ Interface API / REST.
 > Ensemble de nœuds travaillant ensemble pour stocker et traiter des _index_. 
 
 ---
-## Cas d'usage d'Elasticsearch
-
-* Recherche "full-text" : recherche dans les applications web, portails, etc...
-* Analyse de logs : agrégation de logs de sources multiples (serveurs/pods...), consultation et analyse
-* Analyse de métriques : agrégation de métriques de sources multiples, consultation et analyse
-* Recherche géospatiale : marketing geolocalisé, suivi de flotte, etc...
-* Recherche de medias
-
----
 
 ## La stack Elastic (_Elastic Stack_)
 
@@ -145,20 +167,86 @@ _ELK_ = Ancien nom de l'_Elastic Stack_ : *E*lasticsearch + *L*ogstash + *K*iban
 
 ## L'indexation
 
-Indexation dynamique :
+Indexation avec _Dynamic Field Mapping_ :
 
 * pas de déclaration préalable de la structure de l'_index_ (_mapping_)
 * chaque nouveau champ détecté sera géré en indexation
+* Elasticsearch essaye de deviner les types des différents champs
 * attention aux types de données envoyées dans le JSON :
-  * `"true" != true`
-  * `"false" != false`
-  * `"1" != 1`
+    * `"true" != true`
+    * `"false" != false`
+    * `"1" != 1`
 
 L'indexation _basique_ permet de démarrer rapidement, mais n'est pas optimisée.
 
 ---
 
-## L'indexation
+## Dynamic Field Mapping
+
+Qu'est ce que ça donne si on indexe ce document ?
+
+```json
+{
+	"booleanString": "true",
+	"booleanType": true,
+    "dateString": "2023/03/16",
+    "dateStringISO": "2023-03-16",
+	"dateStringFr": "16/03/2023",
+	"intString": "12",
+	"intType": 12,
+	"floatStringFR": "12,3",
+	"floatStringUS": "12.3",
+	"floatType": 12.3
+}
+```
+
+---
+
+## Dynamic Field Mapping
+
+Qu'est ce que ça donne si on indexe ce document ?
+
+```json
+{
+	"booleanString": "true",       => text
+	"booleanType": true,           => boolean
+    "dateString": "2023/03/16",    => date
+    "dateStringISO": "2023-03-16", => date
+	"dateStringFr": "16/03/2023",  => text
+	"intString": "12",             => text
+	"intType": 12,                 => long
+	"floatStringFR": "12,3",       => text
+	"floatStringUS": "12.3",       => text
+	"floatType": 12.3              => float
+}
+```
+
+---
+
+## Dynamic Field Mapping
+
+| valeur JSON                         | type détecté |
+|-------------------------------------|--------------|
+| `true` ou `false`                   | `boolean`    |
+| `"true"` ou `"false"`               | `text`       |
+| Une date ISO : `"2023-03-21"`       | `date`       |
+| Une date pas ISO : `"2023/03/21"`   | `date`       |
+| Une date format FR : `"21/03/2023"` | `text`       |
+
+---
+
+## Dynamic Field Mapping
+
+| valeur JSON                         | type détecté |
+|-------------------------------------|--------------|
+| `12`                                | `long`       |
+| `12.5`                              | `float`      |
+| `"12"`                              | `text`       |
+| `"12.5"`                            | `text`       |
+| `"Je suis ton père"`                | `text`       |
+---
+
+## Les propriétés d'un index
 
 Les propriétés d'un index:
 
