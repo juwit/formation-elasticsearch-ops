@@ -4,6 +4,7 @@
       <meta charset="UTF-8">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/reveal.min.css">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/theme/white.min.css" id="theme">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/plugin/highlight/zenburn.min.css" id="highlight">
   </head>
   <body>
     <div class="reveal">
@@ -21,9 +22,11 @@
   <script type="module">
     import Reveal from 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/reveal.esm.min.js';
     import markdown from 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/plugin/markdown/markdown.esm.min.js';
+    import highlight from 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/plugin/highlight/highlight.esm.min.js';
 
     Reveal.initialize({
-      plugins: [markdown],
+      plugins: [markdown, highlight],
+      hash: true,
     });
   </script>
 </html>
