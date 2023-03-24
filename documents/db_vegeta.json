@@ -1,0 +1,10 @@
+{
+  "name": "Vegeta",
+  "race": "Saiyan",
+  "birthdate": "0732-12-23T00:00:00Z",
+  "power_level": 18000,
+  "techniques": ["Galick Gun", "Big Bang Attack", "Final Flash"],
+  "friends": ["Bulma", "Trunks", "Piccolo"],
+  "enemies": ["Goku", "Frieza", "Cell"],
+  "favorite_quote": "I am the prince of all Saiyans once again! And I am not like Kakarot! My goal has been clear from the beginning: to become the strongest being in the universe, and to do that I will surpass every last one of my limits!"
+}

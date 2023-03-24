@@ -1,0 +1,9 @@
+{
+  "name": "Han Solo",
+  "species": "Human",
+  "gender": "Male",
+  "homeworld": "Corellia",
+  "occupation": "Smuggler",
+  "affiliation": ["Rebel Alliance"],
+  "favorite_quote": "Never tell me the odds!"
+}

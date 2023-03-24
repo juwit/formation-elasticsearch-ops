@@ -1,0 +1,9 @@
+{
+  "name": "Yoda",
+  "species": "Unknown (Jedi Master)",
+  "gender": "Male",
+  "homeworld": "Unknown",
+  "occupation": "Jedi Grand Master",
+  "affiliation": ["Jedi Order", "Galactic Republic"],
+  "favorite_quote": "Do or do not. There is no try."
+}

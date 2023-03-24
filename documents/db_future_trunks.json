@@ -1,0 +1,10 @@
+{
+  "name": "Future Trunks",
+  "race": "Half-Saiyan",
+  "birthdate": "0766-05-12T00:00:00Z",
+  "power_level": 170000000,
+  "techniques": ["Burning Attack", "Shining Sword Attack", "Galick Gun"],
+  "friends": ["Gohan", "Piccolo", "Krillin"],
+  "enemies": ["Androids 17 and 18", "Cell", "Frieza"],
+  "favorite_quote": "I am not Goku, but I fight for the same reasons as he does. Protecting life, and defending it from evil."
+}

@@ -1,0 +1,9 @@
+{
+  "name": "Princess Leia Organa",
+  "species": "Human",
+  "gender": "Female",
+  "homeworld": "Alderaan",
+  "occupation": "Senator",
+  "affiliation": ["Rebel Alliance", "New Republic"],
+  "favorite_quote": "Help me, Obi-Wan Kenobi. You're my only hope."
+}

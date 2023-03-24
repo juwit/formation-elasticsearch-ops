@@ -1,0 +1,9 @@
+{
+  "name": "Obi-Wan Kenobi",
+  "species": "Human",
+  "gender": "Male",
+  "homeworld": "Stewjon",
+  "occupation": "Jedi Master",
+  "affiliation": ["Jedi Order", "Galactic Republic", "Rebel Alliance"],
+  "favorite_quote": "The Force will be with you, always."
+}

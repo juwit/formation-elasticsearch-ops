@@ -1,0 +1,10 @@
+{
+  "name": "Piccolo",
+  "race": "Namekian",
+  "birthdate": "0753-05-09T00:00:00Z",
+  "power_level": 3500,
+  "techniques": ["Makankosappo", "Hellzone Grenade", "Special Beam Cannon"],
+  "friends": ["Gohan", "Krillin", "Tien"],
+  "enemies": ["Raditz", "Nappa", "Frieza"],
+  "favorite_quote": "It's not about how many times you get knocked down. It's about how many times you get back up."
+}

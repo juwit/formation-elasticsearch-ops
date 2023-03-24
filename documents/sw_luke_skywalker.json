@@ -1,0 +1,9 @@
+{
+  "name": "Luke Skywalker",
+  "species": "Human",
+  "gender": "Male",
+  "homeworld": "Tatooine",
+  "occupation": "Jedi Knight",
+  "affiliation": ["Rebel Alliance", "New Jedi Order"],
+  "favorite_quote": "I am a Jedi, like my father before me."
+}

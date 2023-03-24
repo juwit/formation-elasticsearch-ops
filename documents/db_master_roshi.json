@@ -1,0 +1,10 @@
+{
+  "name": "Master Roshi",
+  "race": "Human",
+  "birthdate": "0430-03-20T00:00:00Z",
+  "power_level": 139,
+  "techniques": ["Kamehameha", "Thunder Shock Surprise", "Evil Containment Wave"],
+  "friends": ["Goku", "Krillin", "Turtle"],
+  "enemies": ["King Piccolo"],
+  "favorite_quote": "There are three things I refuse to tolerate. Cowardice. Bad haircuts, and military insurrection. And it is unfortunate that our friend Vegeta possesses all three of these."
+}

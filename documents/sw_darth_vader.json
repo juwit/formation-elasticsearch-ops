@@ -1,0 +1,9 @@
+{
+   "name": "Darth Vader",
+   "species": "Human",
+   "gender": "Male",
+   "homeworld": "Tatooine",
+   "occupation": "Sith Lord",
+   "affiliation": ["Galactic Empire", "Sith Order"],
+   "favorite_quote": "I find your lack of faith disturbing."
+}

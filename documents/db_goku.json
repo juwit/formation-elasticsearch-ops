@@ -1,0 +1,10 @@
+{
+  "name": "Goku",
+  "race": "Saiyan",
+  "birthdate": "0736-04-16T00:00:00Z",
+  "power_level": 9001,
+  "techniques": ["Kamehameha", "Spirit Bomb", "Kaio-ken"],
+  "friends": ["Krillin", "Bulma", "Yamcha"],
+  "enemies": ["Frieza", "Cell", "Majin Buu"],
+  "favorite_quote": "I am the hope of the universe. I am the answer to all living things that cry out for peace. I am protector of the innocent. I am the light in the darkness. I am Goku!"
+}

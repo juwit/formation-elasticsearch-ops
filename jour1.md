@@ -2,7 +2,28 @@
 
 ## Jour 1
 
+https://gitlab.com/groups/gitlab-org/-/uploads/e21f315177585c93ea6e748470367dca/elasticsearch-sizing-and-capacity-planning.pdf
+
 ---
+
+## Comment lire ces slides ?
+
+Faites attention à la navigation dans les slides quand vous les relisez !
+
+Les flèches en bas à droite vous indiquent la navigation dans les slides :
+
+![](assets/slides_navigation.png)
+
+===
+
+La touche `ECHAP` vous permet d'avoir une vue d'ensemble.
+
+Les flèches directionnelles permettent de naviguer.
+
+La touche `ESPACE` permet d'aller au slide suivant.
+
+---
+
 ## Objectifs de la journée
 
 * Savoir ce qu'est _Elasticsearch_
@@ -10,7 +31,6 @@
 * Connaitre le vocabulaire associé
 * Comprendre les architectures Elasticsearch
 * Savoir _indexer_ et _requêter_ des documents
-
 
 ---
 <!-- .slide: data-visibility="hidden" -->
@@ -51,7 +71,7 @@ Interface API / REST.
 
 ### Elasticsearch et Lucene
 
-![](elasticsearch-elastic-lucenne.png) <!-- .element: class="r-stretch" -->
+![](assets/elasticsearch-elastic-lucenne.png) <!-- .element: class="r-stretch" -->
 
 ---
 
@@ -61,7 +81,6 @@ Interface API / REST.
 * Analyse de logs : agrégation de logs de sources multiples (serveurs/pods...), consultation et analyse
 * Analyse de métriques : agrégation de métriques de sources multiples, consultation et analyse
 * Recherche géospatiale : marketing geolocalisé, suivi de flotte, etc...
-* Recherche de medias
 
 ---
 
@@ -73,7 +92,22 @@ On peut ajouter des _nœuds_ à un _cluster_ pour augmenter la taille de stockag
 
 Le modèle de _sharding_ (_primaire_, _replica_) permet d'être résistant à la panne.
 
-Elasticcsearch se charge de distribuer les données et les requêtes.
+Elasticsearch se charge de distribuer les données et les requêtes.
+
+---
+
+## Elasticsearch VS les BDD
+
+Les bases de données relationnelles sont dites _ACID_ :
+
+* Atomicité des transactions (tout ou rien)
+* Consistance des données (pas d'état incorrect)
+* Isolation (plusieurs transactions en //)
+* Durabilité des données, en cas de crash après un commit
+
+Elasticsearch ne couvre aucune de ces propriétés.
+
+Elasticsearch ne *doit* pas être utilisé comme une base de données.
 
 ---
 
@@ -88,11 +122,11 @@ _ELK_ = Ancien nom de l'_Elastic Stack_ : *E*lasticsearch + *L*ogstash + *K*iban
 
 ===
 
-![](elasticsearch-elastic-stack-roles.png) <!-- .element: class="r-stretch" -->
+![](assets/elasticsearch-elastic-stack-roles.png) <!-- .element: class="r-stretch" -->
 
 ===
 
-![](elasticsearch-elastic-stack-architecture.png) <!-- .element: class="r-stretch" -->
+![](assets/elasticsearch-elastic-stack-architecture.png) <!-- .element: class="r-stretch" -->
 
 ---
 
@@ -174,14 +208,54 @@ _ELK_ = Ancien nom de l'_Elastic Stack_ : *E*lasticsearch + *L*ogstash + *K*iban
 > Les shards _replica_ sont utilisés pour la redondance de données (perte de nœuds).
 > Les shards _replica_ sont utilisés en lecture pour répondre à des requêtes.
 
+===
+
+> Sécurité, Users & RBAC
+> 
+> Les lectures/écritures sur Elasticsearch doivent être sécurisées.
+
+Chaque requête doit être authentifiée :
+* `Authorization: Basic <TOKEN>` pour un utilisateur
+* `Authorization: Bearer <TOKEN>` pour un service account 
+* `Authorization: ApiKey <APIKEY>` pour une clé d'API
+
+===
+
+> Refresh
+> 
+> Quand un document est stocké dans Elasticsearch, il est disponible au plus tard moins d'une seconde après pour les recherches.
+> 
+> Ce comportement est lié au fonctionnement interne de buffering de Luceneet peut être paramétré.
+
 ---
 
 ## Indexation de documents
 
+### Création d'un index
+
+```http request
+PUT <index_name>
+```
+```json
+{
+// propriétés de l'index
+}
+```
+
+Le nom de l'index est *obligatoire*.
+
+Nous verrons les propriétés plus loin.
+
+===
+
+### Indexation d'un document
+
 ```http request
 POST <index_name>/_doc/<id>
+```
+```json
 {
-  // document
+  // document JSON
 }
 ```
 
@@ -189,17 +263,24 @@ Le nom de l'index est *obligatoire*.
 
 L'identifiant est *facultatif*.
 
+Si l'index n'existe pas, il est créé.
+
 ===
 
-### Exemples choisis :
+### Exemples choisis
 
-```
+```http request
 POST starwars_characters/_doc/1
+```
+```json
 {
-  "name": "Darth Vader",
-  "species": "Human",
-  "affiliation": "Galactic Empire",
-  "quote": "Tu sous-estimes le pouvoir du côté obscur. Si tu refuses de te battre, tu devras affronter ton destin."
+   "name": "Luke Skywalker",
+   "species": "Human",
+   "gender": "Male",
+   "homeworld": "Tatooine",
+   "occupation": "Jedi Knight",
+   "affiliation": ["Rebel Alliance", "New Jedi Order"],
+   "favorite_quote": "I am a Jedi, like my father before me."
 }
 ```
 ```json
@@ -222,11 +303,16 @@ POST starwars_characters/_doc/1
 
 ```http request
 POST starwars_characters/_doc/2
+```
+```json
 {
-  "name": "Luke Skywalker",
-  "species": "Human",
-  "affiliation": "Rebel Alliance",
-  "quote": "Vous auriez dû négocier, Jabba. C’est la dernière erreur que vous commettez."
+   "name": "Darth Vader",
+   "species": "Human",
+   "gender": "Male",
+   "homeworld": "Tatooine",
+   "occupation": "Sith Lord",
+   "affiliation": ["Galactic Empire", "Sith Order"],
+   "favorite_quote": "I find your lack of faith disturbing."
 }
 ```
 ```json
@@ -245,69 +331,95 @@ POST starwars_characters/_doc/2
 }
 ```
 
+---
+
+## TP Indexation
+
+![](assets/Coding-workshop.png)
+
 ===
 
-```http request
-POST dragonball_characters/_doc
-{
-  "name": "Goku",
-  "race": "Saiyan",
-  "power_level": 9001,
-  "favorite_technique": "Kamehameha"
-}
+### Pré-requis
+
+Vous allez avoir besoin :
+
+* d'un client HTTP (Postman, Insomnia, curl)
+* d'un accès internet !
+
+L'url du cluster pour jouer :
+* https://fictional-characters.es.europe-west1.gcp.cloud.es.io
+* ApiKey : 
 ```
-```json
-{
-  "_index": "dragonball_characters",
-  "_id": "rRbN5IYB1dofWQObFlRD",
-  "_version": 1,
-  "result": "created",
-  "_shards": {
-    "total": 2,
-    "successful": 2,
-    "failed": 0
-  },
-  "_seq_no": 0,
-  "_primary_term": 1
-}
+OXBIZkU0Y0J1S1dQTWxSelBBYVQ6VmJZZEEtT1ZTZTJvRXFCR2ZLb1ZPZw==
 ```
 
 ===
 
-```http request
-POST dragonball_characters/_doc
-{
-  "name": "Vegeta",
-  "race": "Saiyan",
-  "power_level": 18000,
-  "favorite_technique": "Galick Gun"
-}
+### Comment construire vos requêtes :
+
+```bash
+curl --request GET \
+  --url https://fictional-characters.es.europe-west1.gcp.cloud.es.io/dragonball_characters/_search \
+  --header 'Authorization: ApiKey OXBIZkU0Y0J1S1dQTWxSelBBYVQ6VmJZZEEtT1ZTZTJvRXFCR2ZLb1ZPZw=='
 ```
-```json
-{
-  "_index": "dragonball_characters",
-  "_id": "rhbN5IYB1dofWQObSlTJ",
-  "_version": 1,
-  "result": "created",
-  "_shards": {
-    "total": 2,
-    "successful": 2,
-    "failed": 0
-  },
-  "_seq_no": 1,
-  "_primary_term": 1
-}
+
+```bash
+curl --request POST \
+  --url https://fictional-characters.es.europe-west1.gcp.cloud.es.io/dragonball_characters/_doc \
+  --header 'Authorization: ApiKey OXBIZkU0Y0J1S1dQTWxSelBBYVQ6VmJZZEEtT1ZTZTJvRXFCR2ZLb1ZPZw==' \
+  --header 'Content-Type: application/json' \
+  --data '{}'
 ```
+
+===
+
+### Sujet
+
+* Créez un index _dragon ball_ portant votre nom
+* Indexez quelques documents.
+
+[Goku](documents/db_goku.json) | [Vegeta](documents/db_vegeta.json) | [Bulma](documents/db_bulma.json) | [Piccolo](documents/db_piccolo.json) | [Future Trunks](documents/db_future_trunks.json) | [Master Roshi](documents/db_master_roshi.json)
+
+* Créez un index _star wars_ portant votre nom
+* Indexez quelques documents.
+
+[Darth Vader](documents/sw_darth_vader.json) | [Luke Skywalker](documents/sw_luke_skywalker.json) | [Leia Organa](documents/sw_leia_organa.json) | [Han Solo](documents/sw_han_solo.json) | [Obi-Wan Kenobi](documents/sw_obi_wan_kenobi.json) | [Yoda](documents/sw_yoda.json)
+
+===
+
+### Correction
+
+![](assets/Certification.png)
 
 ---
 
 ## Requêter des documents - Query
 
-Une requête est parsée, envoyée aux index concernés, exécutée par les _shards_. Les résultats sont scorés, puis aggrégés avant d'être reenvoyés.
+Une requête est parsée, envoyée aux index concernés, exécutée par les _shards_. Les résultats sont scorés, puis agrégés avant d'être renvoyés.
 
 Une requête est traitée dans un _shard_ par un seul thread, néanmoins, chaque _shard_ peut exécuter plusieurs threads en parallèle.
 
-Le thread pool de traitement des requêtes est fixé à (((node.processors * 3) / 2) + 1). 2 CPU => 4 threads
+===
+
+### Compter les documents
+
+```http request
+GET starwars_characters/_count
+```
+
+```json
+{
+  "count": 2,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  }
+}
+```
+
+Il est aussi possible de passer une query en paramètre, pour compter les documents qui matchent certains critères.
 
 ===
 
@@ -360,28 +472,50 @@ GET starwars_characters/_search
 }
 ```
 
-===
-
-### Recherche avec un query-string
-
-```http request
-GET starwars_characters/_search?q=Vader
-```
+10 documents remontés par défaut. Paramètres `from` et `to` pour faire de la pagination.
 
 ===
 
-### Recherche avec un query-string plus précis
+### Le résultat d'une recherche
 
-```http request
-GET starwars_characters/_search?q=name:Vader
-```
+* `took` : durée de traitement de la requête en _ms_
+* `_shards` : infos sur les _shards_ parcourus par la requête
+* `hits` : résultats + méta-données
+* `hits.hits` : résultat : 
+  * `_index` contenant le document
+  * `_id` du document
+  * `_score` de la recherche sur ce document
+  * `_source` du document
 
 ===
 
 ### Recherche avec un body JSON
 
 ```http request
+GET <target>/_search
+```
+```json
+{
+  "query": {
+    <query_elements>
+  }
+}
+```
+
+`target` est l'index, l'alias ou un wildcard (`log-*`) dans lequel rechercher
+
+===
+
+### Les types de _query_
+
+#### Match
+
+Recherche *full-texte* sur un champ :
+
+```http request
 GET starwars_characters/_search
+```
+```json
 {
   "query": {
     "match": {
@@ -391,559 +525,181 @@ GET starwars_characters/_search
 }
 ```
 
----
-
-## Mapping
-
-> La définition des _champs_ d'un _index_, nom et types. Utilisé pour définir comment les champs doivent être indexés et recherchés.
-
-2 méthodes:
-
-* dynamic field mapping : automatique, facile, peu optimisé
-* explicit mapping : manuel, optimisé, nécessite une bonne connaissance de la data
-
 ===
 
-### Dynamic Field Mapping
+#### Term
 
-* pas de déclaration préalable de la structure de l'_index_ (_mapping_)
-* Elasticsearch essaye de deviner les types des différents champs
-* attention aux types de données envoyées dans le JSON :
-    * `"true" != true`
-    * `"1" != 1`
-
-L'indexation _basique_ permet de démarrer rapidement, mais n'est pas optimisée.
-
-===
-
-Qu'est ce que ça donne si on indexe ce document ?
-
-```json
-{
-	"booleanString": "true",
-	"booleanType": true,
-    "dateString": "2023/03/16",
-    "dateStringISO": "2023-03-16",
-	"dateStringFr": "16/03/2023",
-	"intString": "12",
-	"intType": 12,
-	"floatStringFR": "12,3",
-	"floatStringUS": "12.3",
-	"floatType": 12.3
-}
-```
-
-===
-
-Qu'est ce que ça donne si on indexe ce document ?
-
-```json
-{
-	"booleanString": "true",       => text
-	"booleanType": true,           => boolean
-    "dateString": "2023/03/16",    => date
-    "dateStringISO": "2023-03-16", => date
-	"dateStringFr": "16/03/2023",  => text
-	"intString": "12",             => text
-	"intType": 12,                 => long
-	"floatStringFR": "12,3",       => text
-	"floatStringUS": "12.3",       => text
-	"floatType": 12.3              => float
-}
-```
-
-===
-
-### Auto détection
-
-| valeur JSON                       | type détecté |
-|-----------------------------------|--------------|
-| `true` ou `false`                 | `boolean`    |
-| `"true"` ou `"false"`             | `text`       |
-| Une date ISO : `"2023-03-21"`     | `date`       |
-| Une date pas ISO : `"2023/03/21"` | `date`       |
-| Une date FR : `"21/03/2023"`      | `text`       |
-
-===
-
-| valeur JSON                         | type détecté |
-|-------------------------------------|--------------|
-| `12`                                | `long`       |
-| `12.5`                              | `float`      |
-| `"12"`                              | `text`       |
-| `"12.5"`                            | `text`       |
-| `"Je suis ton père"`                | `text`       |
-
----
-
-## Explicit Field Mapping
-
-Le _Dynamic Field Mapping_ n'est en général pas suffisant:
-
-* la détection des types est minimal (cf `"true"` et `"12.5"` détectés en `text`).
-* un mauvais typage = une mauvaise indexation = de mauvaises perfs
-
-Le field mapping permet de déclarer le typage des champs manuellement.
-
-===
-
-### Les types de champs les plus courants
-
-* `text` : recherches _full texte_ 
-ex : `"Votre manque de foi me consterne."`
-* `keyword` : recherche _exacte_ 
-ex : `"Jedi"`, `"Sith"`
-* `boolean` : `true`, `false`
-* `integer`, `long`, `float`, `double` : Données numériques. Requêtes en `range`.
-ex :  `1`, `12.5` 
-* `date` : Données temporelle (à la milliseconde). Converties en UTC, et stockées en `long`.
-
-===
-
-### Les autres types de champs
-
-* `range` : plage de valeurs numériques, min/max, dates, adresses IP.
-  ex : `{ "gte" : 10, "lt" : 20 }`
-* `ip`: adresse IP (v4 ou v6)
-  ex : `"192.168.0.0/16"`
-* `geo_point` : latitude et une longitude
-  ex : `{ "lat": 41.12, "lon": -71.34 }`              |
-* `fields` : Type particulier permettant d'indexer un champ de 2 manières (`text` + `keyword` par exemple)
-
-===
-
-### Déclarer un mapping
-
-La déclaration d'un mapping se fait à la création de l'index !
-
-Il est possible de déclarer des champs supplémentaires à un index existant.
-
-Il n'est pas possible de modifier le mapping d'un champ existant (il faut réindexer les données).
-
-===
+Recherche *exacte* sur un champ :
 
 ```http request
-PUT starwars_characters
+GET starwars_characters/_search
 ```
 ```json
 {
-  "mappings": {
-    "properties": {
-      "affiliation": {
-        "type": "keyword"
-      },
-      "name": {
-        "type": "text"
-      },
-      "quote": {
-        "type": "text"
-      },
-      "species": {
-        "type": "keyword"
+  "query": {
+    "term": {
+      "name": "Darth Vader"
+    }
+  }
+}
+```
+
+Convient aux ID, username, énumérations...
+
+===
+
+#### Range
+
+Recherche sur la valeur d'un champ dans une fourchette de valeurs :
+
+```http request
+GET dragonball_characters/_search
+```
+```json
+{
+  "query": {
+    "range": {
+      "power_level": {
+        "gt": 9000
       }
     }
   }
 }
 ```
 
+Aux valeurs numériques, aux dates...
+
+Paramètres: `gt`, `gte`, `lt`, `lte` (greater/lower than or equal).
+
 ===
 
-### Voir le mapping d'un index
+#### Query combinées
+
+Les recherches peuvent être de plusieurs types et sur plusieurs champs
+
+Utiliser une recherche `bool`, avec un tableau de `must` ou `must_not`.
 
 ```http request
-GET starwars_characters/_mapping
+GET dragonball_characters/_search
 ```
 ```json
 {
-  "starwars_characters": {
-    "mappings": {
-      "properties": {
-        "affiliation": {
-          "type": "keyword"
-        },
-        "name": {
-          "type": "text"
-        },
-        "quote": {
-          "type": "text"
-        },
-        "species": {
-          "type": "keyword"
-        }
-      }
-    }
-  }
-}
-```
-
-===
-
-### `text` vs `keyword`
-
-Les données des champs `text` sont analysées pour être indexées en vue d'une recherche _full texte_ :
-
-* tokenization : découpage du texte en tokens (mots)
-* normalization : passage en minuscules, réduction des mots (singulier, infinitif)
-
-===
-
-#### Analyseurs de texte
-
-`standard` :
-
-> "Votre manque de foi me consterne." => ["votre"] -> ["manque"] -> ["de"] -> ["foi"] -> ["me"] -> ["consterne"]
-
-`french` :
-
-> "Votre manque de foi me consterne." => ["manqu"] -> ["foi"] -> ["constern"]
-
-===
-
-Le choix d'un analyseur a des impacts sur la taille de l'index et la performance de la recherche.
-
-L'analyseur `standard` est par défaut et fonctionne pour la plupart des cas.
-
-===
-
-Exemple: 2 docs, 1 champ avec l'analyseur `standard` : 
-```json
-{
-  "health": "green",
-  "status": "open",
-  "index": "starwars_characters",
-  "uuid": "Rw_RUSx7QnycqTrXMso90A",
-  "pri": "1",
-  "rep": "1",
-  "docs.count": "2",
-  "docs.deleted": "0",
-  "store.size": "11.4kb",
-  "pri.store.size": "11.4kb"
-}
-```
-
-===
-
-Exemple: 2 docs, 1 champ avec l'analyseur `french` :
-```json
-	{
-  "health": "green",
-  "status": "open",
-  "index": "starwars_characters",
-  "uuid": "QjtqiacSSYC-5cN9UISQpw",
-  "pri": "1",
-  "rep": "1",
-  "docs.count": "2",
-  "docs.deleted": "0",
-  "store.size": "11.1kb",
-  "pri.store.size": "11.1kb"
-}
-```
-
-===
-
-#### Déclaration d'un analyseur de texte
-
-```http request
-PUT starwars_characters
-```
-```json
-{
-  "mappings": {
-    "properties": {
-      "affiliation": {
-        "type": "keyword"
-      },
-      "name": {
-        "type": "text"
-      },
-      "quote": {
-        "type": "text",
-        "analyzer": "french"
-      },
-      "species": {
-        "type": "keyword"
-      }
-    }
-  }
-}
-```
-
-===
-
-#### `keyword`
-
-Les données des champs `keyword` sont prévues pour faire un matching _exact_, pas d'analyse.
-
-> "Darth Vader" != "darth vader" dans ce modèle
-
-===
-
-Exemple d'un mapping keyword:
-
-```json
-{
-  "mappings": {
-    "properties": {
-      "name": {
-        "type": "keyword"
-      }
-    }
-  }
-}
-```
-
-===
-
-Document :
-
-```json
-{ "name": "Darth Vader" }
-```
-
-Query
-```http request
-GET starwars_characters/_search?q=name:Vader
-// pas de résultat
-```
-
-```http request
-GET starwars_characters/_search?q=name:Darth\ Vader
-// un résultat !
-```
-
----
-
-## Fields, et mapping multiples
-
-Il est possible de faire du mapping multiple sur des champs.
-
-Ex: `text` + `keyword`, pour permettre une recherche exacte performante en plus d'une recherche full text.
-
-C'est ce que fait _Elasticsearch_ par défaut sur les champs en mapping dynamique.
-
-===
-
-Exemple d'un mapping généré
-
-```json
-{
-  "starwars_characters": {
-    "mappings": {
-      "properties": {
-        "affiliation": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "term": {
+            "friends": "bulma"
           }
         },
-        "name": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "quote": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "species": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
+        {
+          "range": {
+            "power_level": {
+              "lt": 10000
             }
           }
         }
-      }
+      ]
     }
   }
 }
 ```
 
----
+===
 
-## Les propriétés d'un index
+### Trier les documents
 
-Les propriétés d'un index:
-
-* `index.number_of_shards` : nombre de shards primaires. Positionné à la création. Ne peut pas être modifié. Valeur à `1` par défaut.
-* `index.number_of_replicas`: nom de shards _replica_ pour chaque shard _primaire_. Peut être modifié. Valuer à `1` par défaut. Ne jamais positionner à `0` => risque de perte de données.
-
-
-
----
-
-## Allocation des shards d'un index.
-
-Dans un cluster hétérogène, on veut pouvoir contrôler l'allocation des shards.
-
----
-
-## Getting index informations
-
-Aliases, Mappings, Settings
+Le paramètre `sort` permet de déclarer un tri
 
 ```http request
-GET starwars_characters
---
+GET dragonball_characters/_search
+```
+```json
 {
-  "starwars_characters": {
-    "aliases": {},
-    "mappings": {
-      "properties": {
-        "affiliation": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "name": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "species": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        }
-      }
-    },
-    "settings": {
-      "index": {
-        "routing": {
-          "allocation": {
-            "include": {
-              "_tier_preference": "data_content"
-            }
-          }
-        },
-        "number_of_shards": "1",
-        "provided_name": "starwars_characters",
-        "creation_date": "1678875502566",
-        "number_of_replicas": "1",
-        "uuid": "P904M3SVSk-ZlKbU2QuKmA",
-        "version": {
-          "created": "8060299"
-        }
+  "query": {
+    "range": {
+      "power_level": {
+        "gt": 9000
       }
     }
+  },
+  "sort": {
+    "name": "asc"
   }
 }
 ```
 
+===
+
+### Projections
+
+Le paramètre `fields` permet de préciser quels champs remonter dans le résultat.
+Souvent utilisé avec `_source: false` pour ne pas remonter le document complet.
+
+```http request
+GET dragonball_characters/_search
+```
+```json
+{
+  "query": {
+    "range": {
+      "power_level": {
+        "gt": 9000
+      }
+    }
+  },
+  "fields": ["name", "power_level"],
+  "_source": false
+}
+```
+
 ---
 
-## Les alias
+## TP Recherche
 
-Permettent de nommer des indexes, ou les regrouper sous un nom différent.
-
-Les alias ne sont pas dynamiques (doivent être re-créés pour prendre en compte un nouvel index)
+![](assets/Coding-workshop.png)
 
 ===
 
-### Créer un alias
+### Sujet
 
-```http request
-POST _aliases
-{
-  "actions": [
-    {
-      "add": {
-        "index": "*_characters",
-        "alias": "characters"
-      }
-    }
-  ]
-}
-```
+Le cluster contient plusieurs index :
+
+* pokemons_gen1
+* pokemons_gen2
 
 ===
 
-### Lister les alias présents dans un cluster
-
-```http request
-GET _alias
---
-{
-	"dragonball_characters": {
-		"aliases": {
-			"characters": {}
-		}
-	},
-	"starwars_characters": {
-		"aliases": {
-			"characters": {}
-		}
-	}
-}
-```
+### Combien de documents contient chaque index ?
 
 ===
 
-### Supprimer un alias dun ou plusieurs index
+### Recherches à exécuter (gen1)
 
-```http request
-POST _aliases
---
-{
-  "actions": [
-    {
-      "remove": {
-        "index": "*_characters",
-        "alias": "characters"
-      }
-    }
-	]
-}
-```
+* Quels sont les `types` du Pokémon de gen1 ayant pour `name` `nidoqueen` ?
+* Quel est le poids (`weight`) du Pokémon de gen1 ayant pour `id` `25` ?
+* Combien de Pokémon de gen1 ont une `stats.attack` supérieure ou égale à `125` ?
+* Combien de Pokémon de gen1 ont une `stats.hp` égale à `100` ?
+* Combien de Pokémon de gen1 ont le `type` `dragon` ?
 
 ===
 
-### Mettre à jour un alias
+### Recherches à exécuter (gen2)
 
-Il faut le supprimer et le recréer, c'est fait dans une seule opération, sans downtime.
+* Quels sont les Pokémon de gen2 ayant `vitesse` dans leur `description` ?
+* Quel est le nom (`name`) du Pokémon de gen2 ayant pour `id` `175` ?
+* Combien de Pokémon de gen2 ont une `stats.attack` comprise entre `120` et `130` ?
+* Combien de Pokémon de gen2 ont le `type` `dragon` ?
+* Combien de Pokémon de gen2 ont une `stats.attack` entre `120` et `130` _et_ une `stats.defense` supérieure à `100` ?
 
-```http request
+===
 
+### Correction des requêtes
 
-POST _aliases
-{
-  "actions": [
-    {
-      "remove": {
-        "alias": "characters"
-      }
-    },
-		{
-      "add": {
-        "index": "*_characters",
-        "alias": "characters"
-      }
-    }
-	]
-}
-```
+![](assets/Coding-workshop.png)
+
+---
+
+## C'est fini pour aujourd'hui !
+
+![](assets/Successful-task-completed.png)

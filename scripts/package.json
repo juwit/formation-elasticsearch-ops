@@ -1,0 +1,20 @@
+{
+  "name": "formation-elasticsearch-ops",
+  "version": "1.0.0",
+  "description": "julien@codeka.io (compte google)",
+  "main": "index.js",
+  "scripts": {
+    "load-pokeapi-data": "zx load_pokeapi_data.mjs",
+    "load-pokeapi-data-bad-mapping": "zx load_pokeapi_data_bad_mapping.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/juwit/formation-elasticsearch-ops.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/juwit/formation-elasticsearch-ops/issues"
+  },
+  "homepage": "https://github.com/juwit/formation-elasticsearch-ops#readme"
+}

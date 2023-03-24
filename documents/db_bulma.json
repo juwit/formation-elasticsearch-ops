@@ -1,0 +1,10 @@
+{
+  "name": "Bulma",
+  "race": "Human",
+  "birthdate": "0733-08-18T00:00:00Z",
+  "power_level": 1,
+  "techniques": [],
+  "friends": ["Goku", "Vegeta", "Krillin"],
+  "enemies": [],
+  "favorite_quote": "I don't care how dangerous it is. I just want to see it. I want to see a real, live dinosaur!"
+}
