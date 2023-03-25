@@ -815,6 +815,63 @@ Un modèle d'index permet de préparer la création des futurs index :
 
 Tous futurs index nommés suivant le pattern de nommage déclaré hériteront des paramètres du modèle.
 
+===
+
+### Création ou modification d'un template
+
+```http request
+PUT /_index_template/characters_template
+```
+```json
+{
+  "index_patterns" : ["*_characters"],
+  "priority": 1,
+  "template": {
+    "settings" : {
+      "number_of_shards" : 2
+    },
+    "aliases": {
+      "characters": {}
+    }
+  }
+}
+```
+
+===
+
+### Suppression d'un template
+
+```http request
+DELETE /_index_template/characters_template
+```
+
+### Listing des templates
+
+```http request
+GET /_index_template
+```
+
+===
+
+### Merge des données
+
+Lors de la création d'un index, si le nom de l'index matche un `index_pattern` de template, les paramètres du template seront mergés avec ceux de l'index.
+
+Les paramètres spécifiés à la création de l'index sont prioritaires sur ceux du template.
+
+===
+
+### Modification et priorité
+
+La modification ou suppression d'un template ne modifie pas les index déjà créés.
+
+La priorité sur un template permet de déterminer que template est appliqué si le nom de l'index matche 2 templates ou plus.
+
+===
+
+### Templates système
+
+De nombreux templates sont instanciés par Elasticsearch et Kibana, attention à ne pas les supprimer.
 
 ---
 
