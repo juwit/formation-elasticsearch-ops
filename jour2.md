@@ -365,7 +365,7 @@ GET starwars_characters/_search
 
 ===
 
-## Fields, et mapping multiples
+### Fields, et mapping multiples
 
 Il est possible de faire du mapping multiple sur des champs.
 
@@ -546,6 +546,53 @@ Gain de disque de 30% 🎉
 * `index.refresh_interval`: temps de rafraichissement des données indexées pour les rendre visible à la recherche. Valeur à `1s` par défaut.
 * `index.search.idle.after` : temps avant qu'un index soit considéré `idle`, et ne soit plus rafraichit. Valeur à `30s` par défaut.
 
+===
+
+### Récupération des settings d'un index
+
+```http request
+GET dragonball_characters/_settings
+```
+```json
+{
+  "dragonball_characters": {
+    "settings": {
+      "index": {
+        "number_of_shards": "1",
+        "provided_name": "dragonball_characters",
+        "creation_date": "1679672494900",
+        "number_of_replicas": "1",
+        "uuid": "P9v7V56nT5-WNOhAP2Cxrw",
+        "version": {
+          "created": "8060299"
+        }
+      }
+    }
+  }
+}
+```
+
+===
+
+### Positionnement des settings à la création d'un index
+
+Avec la propriété `settings`
+
+```http request
+PUT dragonball_characters
+```
+```json
+{
+  "mappings": {},
+  "settings": {
+    "index": {
+      "number_of_shards": 2,
+      "number_of_replicas": 1
+    }
+  }
+}
+```
+
 ---
 
 ## Les alias
@@ -681,6 +728,74 @@ POST _aliases
       "add": {
         "index": "*_characters",
         "alias": "characters"
+      }
+    }
+  ]
+}
+```
+
+===
+
+### Positionnement des alias à la création d'un index
+
+Avec la propriété `aliases`
+
+```http request
+PUT dragonball_characters
+```
+```json
+{
+  "mappings": {},
+  "settings": {},
+  "aliases": {
+    "characters": {}
+  }
+}
+```
+
+===
+
+### Write index
+
+Il est possible de faire des indexations sur un alias.
+L'index cible doit être déclaré comme `is_write_index` lors de la création/modification de l'alias.
+
+```http request
+PUT dragonball_characters
+```
+```json
+{
+  "aliases": {
+    "characters": {
+      "is_write_index": true
+    }
+  }
+}
+```
+
+===
+
+### Filtres
+
+Il est aussi possible de déclarer des filtres sur un alias.
+Les documents remontés à la recherche sur l'alias seront filtrés avec la requête donnée.
+
+```http request
+PUT dragonball_characters/_alias
+```
+```json
+{
+  "actions": [
+    {
+      "add": {
+        "alias": "over9000",
+        "filter": {
+          "range": {
+            "power_level": {
+              "gte": 9000
+            }
+          }
+        }
       }
     }
   ]
