@@ -6,10 +6,11 @@
 
 ## Objectifs de la journée
 
-* Comprendre les _mapping_ et savoir les déclarer
-* Savoir paramétrer un _index_
-* Comprendre et maitriser les _alias_
-* Savoir faire des réindexations
+* Comprendre les _mappings_ et savoir les déclarer.
+* Savoir paramétrer un _index_.
+* Comprendre et maitriser les _alias_.
+* Savoir faire des réindexations, split et merge.
+* index blocks
 
 ---
 
@@ -362,7 +363,7 @@ GET starwars_characters/_search
 ```
 1 résultat
 
----
+===
 
 ## Fields, et mapping multiples
 
@@ -531,14 +532,174 @@ Gain de disque de 30% 🎉
 
 ---
 
----
+## Le paramétrage d'un index (index settings) ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html))
 
-## Le paramétrage d'un index
+### Shards & replicas
 
 * `index.number_of_shards` : nombre de shards primaires. Positionné à la création. Ne peut pas être modifié. Valeur à `1` par défaut.
 * `index.number_of_replicas`: nom de shards _replica_ pour chaque shard _primaire_. Peut être modifié. Valeur à `1` par défaut. Ne jamais positionner à `0` => risque de perte de données.
+
+===
+
+### Refresh
+
 * `index.refresh_interval`: temps de rafraichissement des données indexées pour les rendre visible à la recherche. Valeur à `1s` par défaut.
 * `index.search.idle.after` : temps avant qu'un index soit considéré `idle`, et ne soit plus rafraichit. Valeur à `30s` par défaut.
+
+---
+
+## Les alias
+
+Permettent de nommer des index, ou les regrouper sous un nom différent.
+
+Les alias ne sont pas dynamiques (doivent être recréés pour prendre en compte un nouvel index).
+
+===
+
+### Créer un alias au niveau du cluster
+
+```http request
+POST _aliases
+```
+```json
+{
+  "actions": [
+    {
+      "add": {
+        "index": "*_characters", // le(s) index cibles
+        "alias": "characters"    // le nom de l'alias
+      }
+    }
+  ]
+}
+```
+
+===
+
+### Créer un alias sur un index
+
+```http request
+PUT dragonball_characters/_alias
+```
+```json
+{
+  "actions": [
+    {
+      "add": {
+        "alias": "characters"    // le nom de l'alias
+      }
+    }
+  ]
+}
+```
+
+===
+
+### Lister les alias présents dans un cluster
+
+```http request
+GET _alias
+```
+```json
+{
+  "dragonball_characters": {
+    "aliases": {
+      "characters": {}
+    }
+  },
+  "starwars_characters": {
+    "aliases": {
+      "characters": {}
+    }
+  }
+}
+```
+
+===
+
+### Lister les alias ciblant un index
+
+```http request
+GET dragonball_characters/_alias
+```
+```json
+{
+  "dragonball_characters": {
+    "aliases": {
+      "characters": {}
+    }
+  }
+}
+```
+
+===
+
+### Supprimer un alias au niveau du cluster
+
+```http request
+POST _aliases
+```
+```json
+{
+  "actions": [
+    {
+      "remove": {
+        "index": "*_characters",
+        "alias": "characters"
+      }
+    }
+  ]
+}
+```
+
+===
+
+### Supprimer un alias au niveau d'un index
+
+```http request
+DELETE dragonball_characters/aliases/characters
+```
+
+===
+
+### Mettre à jour un alias
+
+Il faut le supprimer et le recréer, c'est fait dans une seule opération, sans downtime.
+
+```http request
+POST _aliases
+```
+```json
+{
+  "actions": [
+    {
+      "remove": {
+        "alias": "characters"
+      }
+    },
+    {
+      "add": {
+        "index": "*_characters",
+        "alias": "characters"
+      }
+    }
+  ]
+}
+```
+
+---
+
+## Les index templates
+
+Un modèle d'index permet de préparer la création des futurs index :
+
+* pattern de nommage
+* mapping
+* settings
+* alias
+
+Tous futurs index nommés suivant le pattern de nommage déclaré hériteront des paramètres du modèle.
+
 
 ---
 
@@ -646,95 +807,3 @@ GET starwars_characters
 }
 ```
 
----
-
-## Les alias
-
-Permettent de nommer des indexes, ou les regrouper sous un nom différent.
-
-Les alias ne sont pas dynamiques (doivent être re-créés pour prendre en compte un nouvel index)
-
-===
-
-### Créer un alias
-
-```http request
-POST _aliases
-{
-  "actions": [
-    {
-      "add": {
-        "index": "*_characters",
-        "alias": "characters"
-      }
-    }
-  ]
-}
-```
-
-===
-
-### Lister les alias présents dans un cluster
-
-```http request
-GET _alias
---
-{
-	"dragonball_characters": {
-		"aliases": {
-			"characters": {}
-		}
-	},
-	"starwars_characters": {
-		"aliases": {
-			"characters": {}
-		}
-	}
-}
-```
-
-===
-
-### Supprimer un alias dun ou plusieurs index
-
-```http request
-POST _aliases
---
-{
-  "actions": [
-    {
-      "remove": {
-        "index": "*_characters",
-        "alias": "characters"
-      }
-    }
-	]
-}
-```
-
-===
-
-### Mettre à jour un alias
-
-Il faut le supprimer et le recréer, c'est fait dans une seule opération, sans downtime.
-
-```http request
-
-
-POST _aliases
-{
-  "actions": [
-    {
-      "remove": {
-        "alias": "characters"
-      }
-    },
-		{
-      "add": {
-        "index": "*_characters",
-        "alias": "characters"
-      }
-    }
-	]
-}
-```
