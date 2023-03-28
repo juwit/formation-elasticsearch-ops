@@ -1130,9 +1130,98 @@ POST _reindex
 }
 ```
 
+===
+
 ### Split & Shrink
 
 Le _split_ consiste à copier un index dans un nouvel index avec *plus* de shards.
 
 Le _shrink_ consiste à copier un index, dans un nouvel index avec *moins* de shards.
 
+===
+
+#### Pré-requis
+
+Les _split_ et _shrink_ nécessitent que les index source soient *read-only*, pour éviter que des documents soient perdus pendant l'opération.
+
+Les index doivent être `green`.
+
+Le _shrink_ doit en plus avoir l'ensemble des shards localisés sur un même _node_.
+
+===
+
+#### Exécuter un _Split_
+
+##### Passer l'index en read-only
+
+```http request
+PUT /starwars_characters/_settings
+```
+```json
+{
+  "settings": {
+    "index.blocks.write": true
+  }
+}
+```
+
+===
+
+##### Splitter l'index
+
+```http request
+POST /starwars_characters/_split/starwars_characters-split
+```
+```json
+{
+  "settings": {
+    "index.number_of_shards": 2
+  }
+}
+```
+```json
+{
+	"acknowledged": true,
+	"shards_acknowledged": true,
+	"index": "starwars_characters-split"
+}
+```
+
+#### Exécuter un _Shrink_
+
+##### Passer l'index en read-only, et allouer tous les shards sur un seul node
+
+```http request
+PUT /starwars_characters/_settings
+```
+```json
+{
+  "settings": {
+    "index.blocks.write": true,
+    "index.number_of_replicas": 0,
+    "index.routing.allocation.require._name": "<name>"
+  }
+}
+```
+
+===
+
+##### Shrinker l'index
+
+```http request
+POST /starwars_characters/_shrink/starwars_characters-shrink
+```
+```json
+{
+  "settings": {
+    "index.number_of_shards": 2
+  }
+}
+```
+```json
+{
+	"acknowledged": true,
+	"shards_acknowledged": true,
+	"index": "starwars_characters-shrink"
+}
+```
