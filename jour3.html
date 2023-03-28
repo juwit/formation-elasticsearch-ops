@@ -34,6 +34,14 @@
     Reveal.initialize({
       plugins: [markdown, highlight],
       hash: true,
+      slideNumber: 'c/t',
+    });
+
+    Reveal.on('ready', () => {
+        const elements = document.getElementsByTagName('a');
+        for (let el of elements) {
+            el.setAttribute('target', '_blank')
+        }
     });
   </script>
 </html>
