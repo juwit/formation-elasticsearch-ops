@@ -9,8 +9,7 @@
 * Comprendre les _mappings_ et savoir les déclarer.
 * Savoir paramétrer un _index_.
 * Comprendre et maitriser les _alias_.
-* Savoir faire des réindexations, split et merge.
-* index blocks
+* Savoir faire des réindexations, split et shrink.
 
 ---
 
@@ -1187,6 +1186,8 @@ POST /starwars_characters/_split/starwars_characters-split
 }
 ```
 
+===
+
 #### Exécuter un _Shrink_
 
 ##### Passer l'index en read-only, et allouer tous les shards sur un seul node
@@ -1225,3 +1226,36 @@ POST /starwars_characters/_shrink/starwars_characters-shrink
 	"index": "starwars_characters-shrink"
 }
 ```
+
+---
+
+## TP Réindexation, Split & Shrink
+
+![](assets/Coding-workshop.png)
+
+===
+
+### Sujet
+
+Nous reprenons les index manipulés jusqu'à présent :
+
+* pokemons_gen1
+* pokemons_gen2
+
+===
+
+#### Réindexez
+
+* Réindexez les deux index `pokemons_gen1` et `pokemons_gen2` en un seul index :
+  * Qui porte votre nom
+  * Qui possède un seul shard
+* Faites un split de ce nouvel index vers un index qui possède `5` _shards_
+* Faites un shrink de cet index splitté, vers un nouvel index qui possède `2` _shards_.
+
+===
+
+### Correction Réindexation, Split & Shrink
+
+![](assets/Coding-workshop.png)
+
+---
