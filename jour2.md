@@ -871,7 +871,45 @@ La priorité sur un template permet de déterminer que template est appliqué si
 
 ### Templates système
 
-De nombreux templates sont instanciés par Elasticsearch et Kibana, attention à ne pas les supprimer.
+De nombreux _index templates_ sont instanciés par Elasticsearch et Kibana, attention à ne pas les supprimer.
+
+---
+
+## TP Alias, Settings et Templates
+
+![](assets/Coding-workshop.png)
+
+===
+
+### Sujet
+
+Nous reprenons les index manipulés jusqu'à présent :
+
+* pokemons_gen1
+* pokemons_gen2
+
+===
+
+#### Créez un alias
+
+* Créez un _alias_ portant votre nom, qui pointe vers les deux index `pokemon_gen1` et `pokemon_gen2`
+* Comptez le nombre de documents disponibles avec votre alias
+
+===
+
+#### Créez un _index template_
+
+Créez un _index template_ portant votre nom :
+* Qui va gérer les index dont le nom commence par `pokemon`
+* Qui va utiliser le mapping créé au TP précédent
+* Qui a pour settings un nombre de _shard_ à `2` et un nombre de _replica_ à `2`
+* Qui ajoute les index à votre alias créé au point précédent
+
+===
+
+### Correction des alias et index template
+
+![](assets/Coding-workshop.png)
 
 ---
 
@@ -921,38 +959,21 @@ Aliases, Mappings, Settings
 
 ```http request
 GET starwars_characters
---
+```
+```json
 {
   "starwars_characters": {
     "aliases": {},
     "mappings": {
       "properties": {
         "affiliation": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
+          "type": "keyword"
         },
         "name": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
+          "type": "keyword"
         },
         "species": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
+          "type": "keyword"
         }
       }
     },
@@ -979,3 +1000,65 @@ GET starwars_characters
 }
 ```
 
+---
+
+## Réindexation et Split
+
+Certaines opérations nécessitent parfois de réindexer les données :
+
+* changement de mapping
+* grouper les données de plusieurs _index_ en 1
+
+La réindexation copie les données d'un index _source_, vers un index _destination_.
+La réindexation ne copie pas les _settings_ ou _mappings_, la destination doit être configurée à l'avance.
+
+===
+
+### Réindexer
+
+```http request
+POST _reindex
+```
+```json
+{
+  "source": {
+    "index": "<index source>"
+  },
+  "dest": {
+    "index": "<index destination>"
+  }
+}
+```
+
+===
+
+### Réindexer plusieurs index
+
+Si plusieurs index doivent être réindexés, Elasticsearch préconise de les faire un à la fois, pour faciliter la reprise en cas d'erreur.
+
+===
+
+### Réindexations partielles
+
+Pour l'opération de réindexation, il est possible de passer en paramètre une `query`:
+
+```http request
+POST _reindex
+```
+```json
+{
+  "source": {
+    "index": "dragonball_characters",
+    "query": {
+      "range": {
+        "power_level": {
+          "lte": 9000
+        }
+      }
+    }
+  },
+  "dest": {
+    "index": "weak_dragonball_characters"
+  }
+}
+```
