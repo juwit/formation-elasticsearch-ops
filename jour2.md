@@ -953,7 +953,7 @@ PUT <index>
 
 ---
 
-## Getting index informations
+## Récupérer des infos sur les index
 
 Aliases, Mappings, Settings
 
@@ -1002,7 +1002,74 @@ GET starwars_characters
 
 ---
 
-## Réindexation et Split
+## Open/Close & Index Blocks
+
+Par défaut, un index créé est _open_ :
+
+* Il peut recevoir de nouveaux documents en indexation
+* Il peut répondre à des requêtes
+
+===
+
+### Fermer un index
+
+Un index peut être fermé pour économiser des ressources.
+L'index sera toujours géré partiellement par le cluster pour s'assurer de la conservation des données des _shards_.
+
+```http request
+POST /starwars_characters/_close
+```
+
+Un index fermé ne peut ni recevoir de nouveaux documents, ni répondre à des recherches.
+
+===
+
+### Ouvrir un index
+
+```http request
+POST /starwars_characters/_open
+```
+
+===
+
+### Index Blocks
+
+Les _index blocks_ permettent de bloquer certaines opérations sur les index :
+
+* passer des index en _read-only_
+* passer des index en _write-only_
+* bloquer la modification des _metadata_ des index : settings, mappings, alias...
+
+===
+
+#### Les blocks
+
+Une valeur à `true` bloque l'opération.
+
+* `index.blocks.read`
+* `index.blocks.read-only`
+* `index.blocks.read_only_allow_delete`
+* `index.blocks.write`
+* `index.blocks.metadata`
+
+===
+
+#### Définir un _index block_
+
+```http request
+PUT /starwars_characters/_settings
+```
+```json
+{
+  "settings": {
+    "index.blocks.write": true
+  }
+}
+```
+
+---
+
+## Réindexation, Split et Shrink
 
 Certaines opérations nécessitent parfois de réindexer les données :
 
@@ -1062,3 +1129,10 @@ POST _reindex
   }
 }
 ```
+
+### Split & Shrink
+
+Le _split_ consiste à copier un index dans un nouvel index avec *plus* de shards.
+
+Le _shrink_ consiste à copier un index, dans un nouvel index avec *moins* de shards.
+
