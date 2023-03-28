@@ -1259,3 +1259,7 @@ Nous reprenons les index manipulés jusqu'à présent :
 ![](assets/Coding-workshop.png)
 
 ---
+
+## C'est fini pour aujourd'hui !
+
+![](assets/Successful-task-completed.png)
