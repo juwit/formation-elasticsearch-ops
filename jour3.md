@@ -317,6 +317,45 @@ POST _snapshot/<repository>/<snapshot_name>/_restore
 DELETE _snapshot/<repository>/<snapshot_name>/_restore
 ```
 
+===
+
+### Snapshot Lifecycle Management (SLM)
+
+Création automatique de snapshots.
+
+===
+
+#### Créer une policy SLM
+
+```http request
+PUT _slm/policy/<name>
+```
+```json
+{
+  "schedule": "0 30 1 * * *", // cron
+  "name": "nightly-snapshot", 
+  "repository": "my_repository",    
+  "config": {
+    "indices": "dragonball_characters"
+  },
+  "retention": {                    
+    "expire_after": "30d",
+    "min_count": 5,
+    "max_count": 50
+  }
+}
+```
+
+===
+
+### Supprimer une policy
+
+```http request
+DELETE _slm/policy/<name>
+```
+
+Supprimer une policy ne supprime pas les snapshots créés.
+
 ---
 
 ## Maintenance des nodes
