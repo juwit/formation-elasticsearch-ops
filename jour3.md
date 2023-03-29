@@ -191,6 +191,134 @@ PUT _ilm/policy/<my_policy>
 
 ---
 
+## Sauvegarde et Restauration
+
+Pas besoin de sauvegarder le filesystem des _nodes_.
+
+Il vaut mieux utiliser des Snapshots (équivalent d'un dump).
+
+===
+
+### Snapshot repositories
+
+un _repository_ permet de stocker des _snapshot_ ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/snapshots-register-repository.html)).
+
+Implémentations disponibles :
+
+* AWS S3
+* Google Cloud Storage (GCS)
+* Azure Blob Storage
+* Shared File System (NFS)
+
+===
+
+### Un snapshot
+
+* Peut contenir un ou plusieurs _index_
+* Contiendra les _mapping_, _settings_, et _alias_ des index sauvegardés
+* Peut contenir le `state` du cluster (ILM policies, index templates)
+
+===
+
+### Créer un _snapshot_ manuellement ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/create-snapshot-api.html))
+
+```http request
+PUT /_snapshot/<repository>/<snapshot name>
+```
+```json
+{
+  "indices": ["starwars_characters", "dragonball_characters"],
+  "metadata": { // optionnel
+    "taken_by": "Julien",
+    "taken_because": "Test Snapshot"
+  }
+}
+```
+
+===
+
+### Sauvegarder le state du cluster ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/create-snapshot-api.html))
+
+```http request
+PUT /_snapshot/<repository>/<snapshot name>
+```
+```json
+{
+  "include_global_state": true
+}
+```
+
+===
+
+### Suivre le statut d'un _snapshot_ ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/get-snapshot-status-api.html))
+
+```http request
+GET _snapshot/<repository>/<snapshot_name>/_status
+```
+```json
+{
+  "snapshots": [
+    {
+      "snapshot": "manual_snapshot",
+      "uuid": "G0Ej1bfqRMC8tCxq8PjUJg",
+      "repository": "found-snapshots",
+      "version_id": 8060299,
+      "version": "8.6.2",
+      "indices": [
+        "dragonball_characters",
+        "starwars_characters"
+      ],
+      "data_streams": [],
+      "include_global_state": false,
+      "metadata": {
+        "taken_by": "Julien",
+        "taken_because": "Test Snapshot"
+      },
+      "state": "SUCCESS",
+      "start_time": "2023-03-29T17:50:44.351Z",
+      "start_time_in_millis": 1680112244351,
+      "end_time": "2023-03-29T17:50:45.952Z",
+      "end_time_in_millis": 1680112245952,
+      "duration_in_millis": 1601,
+      "failures": [],
+      "shards": {
+        "total": 2,
+        "failed": 0,
+        "successful": 2
+      },
+      "feature_states": []
+    }
+  ],
+  "total": 1,
+  "remaining": 0
+}
+```
+
+===
+
+### Restaurer un _snapshot_
+
+On peut restaurer partiellement un _snapshot_ (un ou plusieurs _index_)
+
+```http request
+POST _snapshot/<repository>/<snapshot_name>/_restore
+```
+```json
+{
+  "indices": ["starwars_characters"]
+}
+```
+
+===
+
+### Supprimer un _snapshot_
+
+```http request
+DELETE _snapshot/<repository>/<snapshot_name>/_restore
+```
+
+---
+
 ## Maintenance des nodes
 
 Préparation au shutdown
