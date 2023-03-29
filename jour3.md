@@ -14,6 +14,7 @@
 * Sauvegarde et Restauration
 * Les API CAT
 * Parcourir Elastic Cloud
+* Bonnes pratiques d'installation
 
 ---
 
@@ -283,4 +284,150 @@ GET _nodes/<node-id>/shutdown
     "explanation": "no shard relocation is necessary for a node restart"
   },
 }
+```
+
+---
+
+## Bonnes pratiques d'installation
+
+* Elasticsearch doit être le seul service qui tourne sur une machine (VM ou bare-metal)
+* Pas besoin de swap (la JVM consommera uniquement de la RAM)
+* Utiliser un user *nix `elasticsearch` dédié
+
+
+===
+
+### Let the JVM be
+
+Laisser Elasticsearch allouer la mémoire de la machine pour la JVM.
+
+Paramètres proposés : 
+
+* Utiliser la JVM packagée avec Elasticsearch ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/setup.html#jvm-version))
+* `-Xms` = `-Xmx` : pour tout de suite allouer la RAM nécessaire 
+  * Positionner la valeur à 50% de la RAM disponible sur la VM ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/advanced-configuration.html#set-jvm-heap-size))
+* Utiliser le G1GC : `-XX:+UseG1GC`
+
+===
+
+### Paramètres systèmes utiles
+
+===
+
+#### File Descriptors
+
+ElasticSearch utilise beaucoup de file descriptors, nombre recommandé > `65535` ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/file-descriptors.html))
+
+Configuration :
+```bash
+# /etc/security/limits.conf
+elasticsearch - nofile 65535
+# ou
+root - nofile 65535
+```
+
+===
+
+#### Taille maximale d'un fichier
+ 
+Elasticsearch va créer de gros fichiers pour chaque shared (plusieurs giga octets).
+
+La taille max des fichiers ne doit pas être limitée.
+
+Configuration :
+
+```bash
+# /etc/security/limits.conf
+elasticsearch - fsize unlimited
+# ou
+root - fsize unlimited
+```
+
+===
+
+#### Mémoire virtuelle
+
+ElasticSearch & Lucene utilise un filesystem `mmapfs` ou `hybridfs`, pour mapper les fichiers lucene disque en mémoire vive ([doc 1](https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules-store.html#file-system), [doc 2](https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html))
+
+Préco de positionnement à `262144` :
+
+```bash
+echo vm.max_map_count=262144 | tee /etc/sysctl.d/99-mmap.conf
+```
+
+===
+
+#### Address Space
+
+Elasticsearch utilise mmap (voir point précédent).
+
+La taille de mémoire virtuelle (address space) d'adresses doit être illimité.
+
+Configuration :
+
+```bash
+# /etc/security/limits.conf
+elasticsearch - as unlimited
+# ou
+root - as unlimited
+```
+
+===
+
+#### Nombre de process
+
+Elasticsearch utilise des threads pour traiter des requêtes, déplacer des données, etc...
+
+La valeur recommandée est un minimum à `4096`. ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/max-number-of-threads.html))
+
+Configuration :
+
+```bash
+# /etc/security/limits.con
+elasticsearch - nproc 4096
+# ou
+root - nproc 4096
+```
+
+===
+
+#### Cache DNS de la JVM
+
+Si les noms DNS sont amenés à changer, attention au cache de la JVM.
+
+Elasticsearch utilise un security manager dans la JVM
+La configuration par défaut d'Elasticsearch cache les résolutions réussies pendant 60 secondes et les résolutions ratées pendant 10 secondes. ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/networkaddress-cache-ttl.html))
+
+===
+
+#### Retry TCP ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/system-config-tcpretries.html))
+
+Si un _node_ ne peut pas être joint, des retransmissions de paquets auront lieu
+* par défaut dans Linux, `15` retransmissions avec backoff, soit `900` secondes avant timeout
+* elasticsearch recommande `5` retransmissions, pour détecter plus finement les node failures en `6` secondes
+
+Configuration :
+```bash
+echo net.ipv4.tcp_retries2=5 | tee /etc/sysctl.d/99-tcp_retries2.conf
+```
+
+===
+
+#### Filesystem `/tmp` exécutable
+
+Elasticsearch utilise du code natif (JNA - Java Native Access)
+
+* ce code est extrait à l'exécution dans le répertoire temporaire `/tmp` pour être exécuté
+* il ne faut pas de flag `noexec` sur le point de montage `/tmp`
+* ou changer de répertoire avec la variable d'env `ES_TMPDIR`
+
+Configuration :
+
+```bash
+# exemple
+export ES_TMPDIR=/usr/share/elasticsearch/tmp
+
+# utilisé dans:
+# config/jvm.options
+-Djava.io.tmpdir=${ES_TMPDIR}
 ```
