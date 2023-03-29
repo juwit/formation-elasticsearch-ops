@@ -109,6 +109,85 @@ Gestion de la vie des index :
 * déplacement de classe de stockage (hot / warm / cold / frozen)
 * suppression de données
 
+===
+
+### Phases
+
+ILM définit des _phases_ :
+
+![](assets/elasticsearch-ilm-phases.png)
+
+Une _policy_ définit les _phases_ à utiliser, quelles actions faire dans chaque _phase_, et les transitions entre les phases.
+
+Les transitions entre les phases sont temporelles (en jours).
+
+===
+
+### Actions
+
+Dans chaque _phase_, ILM peut :
+
+* faire des rotations sur un critère : `max_age`, `max_docs`, `max_size`
+* passer des index en `read-only`
+* changer le nombre de replicas
+* migrer les données dans une `data tier`
+* faire un `shrink` sur les index
+* Supprimer les index
+
+
+===
+
+### Actions & Phases
+
+Toutes les phases ne supportent pas toutes les actions :
+
+* une action `read-only` en phase `hot` n'a pas de sens
+* une action `delete` ne se fait qu'en phase `delete`
+
+===
+
+### Création d'une policy dans Kibana
+
+![](assets/elasticsearch-kibana-create-policy.png)
+
+===
+
+### Création d'une policy en REST
+
+```http request
+PUT _ilm/policy/<my_policy>
+```
+```json
+{
+  "policy": {
+    "phases": {
+      "hot": {
+        "actions": {
+          "rollover" : {
+            "max_size": "100gb"
+          }
+        }
+      },
+      "warm": {
+        "min_age": "10d",
+        "actions": {
+          "allocate": {
+            "number_of_replicas": 1
+          },
+          "readonly": {}
+        }
+      },
+      "delete": {
+        "min_age": "30d",
+        "actions": {
+          "delete": {}
+        }
+      }
+    }
+  }
+}
+```
+
 ---
 
 ## Maintenance des nodes
