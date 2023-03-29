@@ -1,18 +1,113 @@
 # elasticsearch pour les ops
 
-## Jour 2
+## Jour 3
 
 ---
 
 ## Objectifs de la journée
 
+* Les rôles d'un node
+* Index Lifecycle Management
 * Savoir dimensionner un cluster
 * Savoir monitorer un cluster
 * Savoir faire une maintenance des nodes
 * Sauvegarde et Restauration
-* Lifecycle Management
 * Les API CAT
 * Parcourir Elastic Cloud
+
+---
+
+## Les rôles d'un node
+
+### Un cluster hétérogène
+
+Des machines de type différentes, hardware différent, disques différents.
+
+![](assets/elasticsearch-cluster-tiering.png)
+
+===
+
+### `node.roles: [ master ]`
+
+Contrôle le cluster, suit les _node_, décide d'allouer des shards à des _node_.
+
+Ces _node_ ne stockent que des données de metadata.
+
+Préco Elasticsearch : des _node_ `master` dédiés à partir de 5 ou 6 _node_
+
+=== 
+
+### `node.roles: [ master, voting_only ]`
+
+Participe aux votes pour l'élection d'un _node_ master.
+
+Permet de limiter le nombre de _node_ `master` dédié, en permettant à un _node_ `data` de participer aux élections.
+
+===
+
+### `node.roles: [ data ]`
+
+Stocker des données et traite des requêtes.
+
+Fort besoins en CPU et RAM.
+
+Possible de spécialiser avec une hiérarchisation (tiering).
+
+===
+
+#### `node.roles: [ data_content ]`
+
+Données stables, qui ne doivent pas changer de _tier_.
+
+Données qui doivent être requêtées rapidement, peu d'écritures, forts besoins en CPU pour avoir des perfs. 
+
+Exemple : catalogue produit.
+
+===
+
+#### `node.roles: [ data_hot ]`
+
+![](assets/elasticsearch-tiering.png)
+
+Données stockées sur du hardware récent, I/O intensif (SSD)
+
+Le point d'entrée d'écriture sur des données time-series, données récentes et fréquemment requêtées (qq jours).
+
+===
+
+#### `node.roles: [ data_warm ]`
+
+![](assets/elasticsearch-tiering.png)
+
+Données requêtées moins fréquemment, données des dernières semaines, sur du hardware un peu moins couteux.
+
+Souvent, on n'indexe plus de nouvelles données dans des index `warm`.
+
+===
+
+#### `node.roles: [ data_cold ]`
+
+![](assets/elasticsearch-tiering.png)
+
+Données qui ne sont plus souvent requêtées, on optimise le cout de stockage, les données restent requêtables quand même, mais on accepte que les requêtes soient plus longues.
+
+===
+
+#### `node.roles: [ data_frozen ]`
+
+![](assets/elasticsearch-tiering.png)
+
+Données archivées sous la forme de snapshots, les données restent toujours requêtables, mais les requêtes sont très longues.
+
+---
+
+## Index Lifecycle Management (ILM)
+
+Gestion de la vie des index :
+
+* rotation automatique (taille / nb de documents / daily )
+* déplacement de classe de stockage (hot / warm / cold / frozen)
+* suppression de données
 
 ---
 
