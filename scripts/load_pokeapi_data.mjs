@@ -44,7 +44,7 @@ async function saveToIndex(indexName, data, id){
     body: JSON.stringify(data),
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Basic ZWxhc3RpYzp0M3VjamRLZzJaek1wbTc1UWM5eWhXTm0='
+      'Authorization': 'Basic ZWxhc3RpYzp4ZjlEVjF3UnR4aHJUUHFqR0lpVnJsRjQ='
     },
 
   }

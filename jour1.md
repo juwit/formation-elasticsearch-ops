@@ -350,7 +350,7 @@ L'url du cluster pour jouer :
 * https://fictional-characters.es.europe-west1.gcp.cloud.es.io
 * ApiKey : 
 ```
-OXBIZkU0Y0J1S1dQTWxSelBBYVQ6VmJZZEEtT1ZTZTJvRXFCR2ZLb1ZPZw==
+ZnhSSkxZY0J2RkQ3VU0yRFE5SG86UjNmMmlCYWJURkMyaTNvc1NOWUZFQQ==
 ```
 
 ===
