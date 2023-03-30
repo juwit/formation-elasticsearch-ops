@@ -686,3 +686,100 @@ GET /_cluster/health?level=shards
   }
 }
 ```
+
+---
+
+## Les API CAT (Compact & Aligned Text)
+
+Les API `_cat` sont destinées aux humains, pour la récupération d'infos sur les clusters.
+
+Pratique depuis un browser, ou depuis un shell en `curl`.
+
+===
+
+### Paramètres
+
+* `v` : mode verbose (entêtes)
+* `h` : filtrer les colonnes
+* `format` : `text`, `json`, `yaml`
+* `sort` : tri
+
+===
+
+### `_cat/health`
+
+Santé du cluster
+
+```http request
+GET _cat/health
+```
+```text
+epoch      timestamp cluster                          status node.total node.data shards pri relo init unassign pending_tasks max_task_wait_time active_shards_percent
+1680185251 14:07:31  54e949dcc17043dabbd8f20fa3fb67e7 yellow          1         1     26  26    0    0       12             0                  -                 68.4%
+```
+
+===
+
+### `_cat/indices`
+
+Liste des index avec leurs détails
+
+```http request
+GET _cat/indices
+```
+```text
+health status index         uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+yellow open   pokemons_gen1 Ox63zh_PRq-abU7xNm6VOQ   1   1        151            0     46.9kb         46.9kb
+yellow open   pokemons_gen2 V4V7pF9gTgmdtw95oJHrwA   1   1        100            0     95.3kb         95.3kb
+```
+
+===
+
+### `_cat/shards`
+
+Liste des _shards_ (tous, ou ceux d'un index)
+
+```http request
+GET _cat/shards/pokemons_*
+```
+```text
+index         shard prirep state      docs  store ip            node
+pokemons_gen1 0     p      STARTED     151 46.9kb 10.43.255.116 instance-0000000000
+pokemons_gen1 0     r      UNASSIGNED
+pokemons_gen2 0     p      STARTED     100 95.3kb 10.43.255.116 instance-0000000000
+pokemons_gen2 0     r      UNASSIGNED
+```
+
+===
+
+### `_cat/nodes`
+
+Liste des _node_
+
+```http request
+GET _cat/nodes
+```
+```text
+ip            heap.percent ram.percent cpu load_1m load_5m load_15m node.role master name
+10.43.255.116           53          98   0    2.52    2.85     3.09 himrst    *      instance-0000000000
+```
+
+===
+
+### `_cat/nodeattrs`
+
+Liste des attributs de nodes (role et custom)
+
+```http request
+GET _cat/nodeattrs
+```
+```text
+node                host          ip            attr                      value
+instance-0000000000 10.43.255.116 10.43.255.116 logical_availability_zone zone-0
+instance-0000000000 10.43.255.116 10.43.255.116 xpack.installed           true
+instance-0000000000 10.43.255.116 10.43.255.116 data                      hot
+instance-0000000000 10.43.255.116 10.43.255.116 server_name               instance-0000000000.54e949dcc17043dabbd8f20fa3fb67e7
+instance-0000000000 10.43.255.116 10.43.255.116 instance_configuration    gcp.es.datahot.n2.68x16x45
+instance-0000000000 10.43.255.116 10.43.255.116 region                    unknown-region
+instance-0000000000 10.43.255.116 10.43.255.116 availability_zone         europe-west1-b
+```
