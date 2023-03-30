@@ -630,6 +630,14 @@ GET /_cluster/health
 
 ===
 
+### `green`, `yellow`, `red`
+
+* `green` : tout va bien
+* `yellow` : des _shards_ *replica* ne sont pas alloués à une machine, risque de perte de données si la machine portant le _shard_ primaire est perdue
+* `red` : des _shard_ *primaire* ne sont pas alloués
+
+===
+
 ### Cluster Health Level
 
 Il est aussi possible de récupérer des détails au niveau des index ou des shards :
@@ -900,3 +908,159 @@ instance-0000000000 10.43.255.116 10.43.255.116 instance_configuration    gcp.es
 instance-0000000000 10.43.255.116 10.43.255.116 region                    unknown-region
 instance-0000000000 10.43.255.116 10.43.255.116 availability_zone         europe-west1-b
 ```
+
+---
+
+## Monitoring d'un cluster
+
+### Disques
+
+Elasticsearch monitore la consommation de disque sur chaque node :
+
+* à _85%_, plus aucun _shard_ alloué sur le _node_
+* à _90%_, déplacement d'un ou plusieurs _shards_ sur d'autre _nodes_
+* à _95%_, passage des _index_ présents sur la machine en _block.readonly_
+
+===
+
+#### Actions préventives
+
+Positionner des sondes sur ces seuils de disque.
+
+À 85%, prévoir une alerte pour déplacer des _shards_, ajouter du disque ou des machines.
+
+===
+
+#### Résilience des données
+
+En cas de perte d'un _node_, Elasticsearch va réallouer les _shards_ présents sur le _node_ perdu sur d'autres _node_.
+
+En fonction du niveau de résilience souhaité, il faut monitorer les disques sur un seuil différent.
+
+===
+
+#### Capacité de résilience des données
+
+Ex :
+
+Un cluster de 3 machines avec 100Go de disque. 
+
+Les disques sont occupés à 80%, doit un total de 240Go. 
+
+En cas de perte d'une machine, le cluster basculera en `yellow` et les _shards_ ne pourront pas être réalloués sur les 2 autres machines.
+
+===
+
+##### Formule de calcul
+
+L'idéal est de rester sous les 80% de consommation de disque en cas de perte d'un _node_.
+
+`seuil = (disk_size * (nb_nodes - 1)) * 80%`
+
+10 machines à 100Go de disque donne un seuil à 720Go pour 1000Go montés.
+
+5 machines à 200Go de disque donne un seuil à 640Go pour 1000Go montés.
+
+===
+
+### Cluster
+
+Monitorer le status tu cluster `green`, `yellow`, `red` :
+
+```http request
+GET /_cluster/health
+```
+
+===
+
+### Services
+
+Monitorer le statut de Index & Snapshots Lifecycle Management :
+
+```http request
+GET /_ilm/status
+```
+
+```http request
+GET /_slm/status
+```
+
+===
+
+#### ILM
+
+Monitorer la bonne exécution des ILM et l'absence d'erreurs
+
+```http request
+_all/_ilm/explain?only_errors
+```
+
+===
+
+#### SLM
+
+Monitorer les snapshot policy et la bonne exécution des derniers snapshots
+
+```http request
+_slm/policy
+```
+```json
+{
+	"cloud-snapshot-policy": {
+      "version": 2,
+      "modified_date_millis": 1680113653534,
+      "policy": {
+        "name": "<cloud-snapshot-{now/d}>",
+        "schedule": "0 30 1 * * ?",
+        "repository": "found-snapshots",
+        "config": {
+          "feature_states": [],
+          "include_global_state": true,
+          "partial": true
+        },
+        "retention": {
+          "expire_after": "7d",
+          "min_count": 10,
+          "max_count": 100
+        }
+      },
+      "last_success": {
+        "snapshot_name": "cloud-snapshot-2023.03.30-bfygoy2stmecp_6pi2p_qw",
+        "start_time": 1680139799924,
+        "time": 1680139808524
+      },
+      "next_execution_millis": 1680226200000,
+      "stats": {
+        "policy": "cloud-snapshot-policy",
+        "snapshots_taken": 13,
+        "snapshots_failed": 0,
+        "snapshots_deleted": 0,
+        "snapshot_deletion_failures": 0
+      }
+    }
+}
+```
+
+===
+
+### Shards
+
+Monitorer la bonne allocation des shards :
+
+```http request
+GET _cluster/health?level=shards
+```
+
+En cas de shard `yellow`, utiliser le cluster allocation explain pour trouver la cause:
+
+```http request
+GET _cluster/allocation/explain
+```
+```json
+{
+  "index": "pokemons_gen1",
+  "shard": 0,
+  "primary": true
+}
+```
+
