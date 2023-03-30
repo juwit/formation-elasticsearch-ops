@@ -949,6 +949,64 @@ PUT <index>
 
 `include` : au moins une des valeurs. `require` : valeur obligatoire. `exclude` : valeur interdite.
 
+===
+
+### Router des shards manuellement
+
+---
+
+### Distribution des documents dans les shards (Partitionnement)
+
+Par défaut, Elasticsearch distribue les documents dans les shards en utilisant choisissant le shard en fonction de l'id du document.
+
+Il est possible de préciser une "clé de routage", pour regrouper des documents similaires dans un même shard.
+
+Attention au risque d'avoir des shards non homogènes.
+
+===
+
+#### Indexation avec clé de routage
+
+Ajouter un paramètre `routing` lors de l'indexation :
+
+```http request
+POST dragonball_characters/_doc?routing=gentil
+```
+```json
+{
+  "name": "Goku",
+  "race": "Saiyan",
+  "birthdate": "0736-04-16T00:00:00Z",
+  "power_level": 9001,
+  "techniques": ["Kamehameha", "Spirit Bomb", "Kaio-ken"],
+  "friends": ["Krillin", "Bulma", "Yamcha"],
+  "enemies": ["Frieza", "Cell", "Majin Buu"],
+  "favorite_quote": "I am the hope of the universe. I am the answer to all living things that cry out for peace. I am protector of the innocent. I am the light in the darkness. I am Goku!"
+}
+```
+
+===
+
+#### Recherche avec clé de routage
+
+Ajouter un paramètre `routing` lors de la recherche, permet de cibler uniquement les shards qui portent la partition
+
+```http request
+GET dragonball_characters/_search?routing=gentil
+```
+```json
+{
+  "took": 2,
+  "timed_out": false,
+  "_shards": {
+    "total": 10,
+    "successful": 10,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {}
+}
+```
 
 ---
 
