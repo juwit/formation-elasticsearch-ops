@@ -1064,3 +1064,57 @@ GET _cluster/allocation/explain
 }
 ```
 
+---
+
+## Dimensionnement d'un cluster
+
+Les ratios pratiqués par Elasticsearch sur Elastic Cloud sont un bon point de départ.
+
+### Ratios Stockage / RAM
+
+* en data `hot` et `content` : 1/45 : 1 Go de RAM pour 45 Go de stockage
+* en data `warm` : 1/190 : 1 Go de RAM pour 190 Go de stockage
+
+===
+
+### Ratios CPU / RAM
+
+* en data `hot` et `content` : 1/4 : 1 CPU pour 4 Go de RAM
+* en data `warm` : 1/8 : 1 CPU pour 8 Go de RAM
+
+===
+
+### CPU - Éléments à prendre en compte
+
+Elasticsearch utilise des pool de threads pour l'indexation et la recherche.
+
+La taille du pool de `search` est :
+
+`1 + (nombre_cpu * 3) / 2`
+
+Cette valeur limite le nombre de recherches possibles en parallèle sur un node.
+
+Penser donc à avoir suffisament de CPU sur les node qui hébergent des _shards_ souvent requêtés.
+
+===
+
+### Capacité de disque
+
+Éléments à prendre en compte :
+
+* Volume de données nominal
+* Facteur de réplication
+* Perte potentielle d'un ou plusieurs node
+* Seuil de surveillance à 15%
+
+===
+
+#### Formules de calcul
+
+`data_total = data * (nombre_replicas + 1)`
+
+`stockage_total = data_total * 1.15`
+
+`nodes = (stockage_total / stockage_node) + 1`
+
+Pour stocker 1 To utile avec 1 replica, sur des nodes avec 500Go de disque, il faut 6 nodes.
