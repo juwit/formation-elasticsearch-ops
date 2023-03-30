@@ -687,6 +687,123 @@ GET /_cluster/health?level=shards
 }
 ```
 
+===
+
+### Cluster allocation explain
+
+Cette API décrit les raisons de l'allocation d'un shard (ou pas) sur un node.
+
+Indispensable pour débugger.
+
+```http request
+GET _cluster/allocation/explain
+```
+```json
+{
+  "index": "pokemons_gen1",
+  "shard": 0,
+  "primary": true
+}
+```
+
+===
+
+```json
+{
+  "index": "pokemons_gen1",
+  "shard": 0,
+  "primary": true,
+  "current_state": "started",
+  "current_node": {
+    "id": "ot6bbHQJRqO49ee9K2rnZQ",
+    "name": "instance-0000000000",
+    "transport_address": "10.43.255.116:19368",
+    "attributes": {
+      "logical_availability_zone": "zone-0",
+      "xpack.installed": "true",
+      "data": "hot",
+      "server_name": "instance-0000000000.54e949dcc17043dabbd8f20fa3fb67e7",
+      "instance_configuration": "gcp.es.datahot.n2.68x16x45",
+      "region": "unknown-region",
+      "availability_zone": "europe-west1-b"
+    },
+    "weight_ranking": 1
+  },
+  "can_remain_on_current_node": "yes",
+  "can_rebalance_cluster": "no",
+  "can_rebalance_cluster_decisions": [
+    {
+      "decider": "rebalance_only_when_active",
+      "decision": "NO",
+      "explanation": "rebalancing is not allowed until all replicas in the cluster are active"
+    },
+    {
+      "decider": "cluster_rebalance",
+      "decision": "NO",
+      "explanation": "the cluster has unassigned shards and cluster setting [cluster.routing.allocation.allow_rebalance] is set to [indices_all_active]"
+    }
+  ],
+  "can_rebalance_to_other_node": "no",
+  "rebalance_explanation": "Elasticsearch is not allowed to allocate or rebalance this shard to another node. If you expect this shard to be rebalanced to another node, find this node in the node-by-node explanation and address the reasons which prevent Elasticsearch from rebalancing this shard there."
+}
+```
+
+===
+
+```http request
+GET _cluster/allocation/explain
+```
+```json
+{
+  "index": "pokemons_gen1",
+  "shard": 0,
+  "primary": false
+}
+```
+
+===
+
+```json
+{
+  "index": "pokemons_gen1",
+  "shard": 0,
+  "primary": false,
+  "current_state": "unassigned",
+  "unassigned_info": {
+    "reason": "INDEX_CREATED",
+    "at": "2023-03-29T12:13:56.797Z",
+    "last_allocation_status": "no_attempt"
+  },
+  "can_allocate": "no",
+  "allocate_explanation": "Elasticsearch isn't allowed to allocate this shard to any of the nodes in the cluster. Choose a node to which you expect this shard to be allocated, find this node in the node-by-node explanation, and address the reasons which prevent Elasticsearch from allocating this shard there.",
+  "node_allocation_decisions": [
+    {
+      "node_id": "ot6bbHQJRqO49ee9K2rnZQ",
+      "node_name": "instance-0000000000",
+      "transport_address": "10.43.255.116:19368",
+      "node_attributes": {
+        "logical_availability_zone": "zone-0",
+        "xpack.installed": "true",
+        "data": "hot",
+        "server_name": "instance-0000000000.54e949dcc17043dabbd8f20fa3fb67e7",
+        "instance_configuration": "gcp.es.datahot.n2.68x16x45",
+        "region": "unknown-region",
+        "availability_zone": "europe-west1-b"
+      },
+      "node_decision": "no",
+      "weight_ranking": 1,
+      "deciders": [
+        {
+          "decider": "same_shard",
+          "decision": "NO",
+          "explanation": "a copy of this shard is already allocated to this node [[pokemons_gen1][0], node[ot6bbHQJRqO49ee9K2rnZQ], [P], s[STARTED], a[id=PnrcdpYuQf-We28hBLgJnA], failed_attempts[0]]"
+        }
+      ]
+    }
+  ]
+}
+```
+
 ---
 
 ## Les API CAT (Compact & Aligned Text)
