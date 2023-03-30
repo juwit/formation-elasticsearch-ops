@@ -598,3 +598,91 @@ export ES_TMPDIR=/usr/share/elasticsearch/tmp
 # config/jvm.options
 -Djava.io.tmpdir=${ES_TMPDIR}
 ```
+
+---
+
+## Cluster Health
+
+La santé du cluster est disponible à travers une API :
+
+```http request
+GET /_cluster/health
+```
+```json
+{
+  "cluster_name": "54e949dcc17043dabbd8f20fa3fb67e7",
+  "status": "yellow",
+  "timed_out": false,
+  "number_of_nodes": 1,
+  "number_of_data_nodes": 1,
+  "active_primary_shards": 16,
+  "active_shards": 16,
+  "relocating_shards": 0,
+  "initializing_shards": 0,
+  "unassigned_shards": 2,
+  "delayed_unassigned_shards": 0,
+  "number_of_pending_tasks": 0,
+  "number_of_in_flight_fetch": 0,
+  "task_max_waiting_in_queue_millis": 0,
+  "active_shards_percent_as_number": 88.88888888888889
+}
+```
+
+===
+
+### Cluster Health Level
+
+Il est aussi possible de récupérer des détails au niveau des index ou des shards :
+
+```http request
+GET /_cluster/health?level=indices
+
+GET /_cluster/health?level=shards
+```
+```json
+{
+  "cluster_name": "54e949dcc17043dabbd8f20fa3fb67e7",
+  "indices": {
+    "pokemons_gen1": {
+      "status": "yellow",
+      "number_of_shards": 1,
+      "number_of_replicas": 1,
+      "active_primary_shards": 1,
+      "active_shards": 1,
+      "relocating_shards": 0,
+      "initializing_shards": 0,
+      "unassigned_shards": 1,
+      "shards": {
+        "0": {
+          "status": "yellow",
+          "primary_active": true,
+          "active_shards": 1,
+          "relocating_shards": 0,
+          "initializing_shards": 0,
+          "unassigned_shards": 1
+        }
+      }
+    },
+    "pokemons_gen2": {
+      "status": "yellow",
+      "number_of_shards": 1,
+      "number_of_replicas": 1,
+      "active_primary_shards": 1,
+      "active_shards": 1,
+      "relocating_shards": 0,
+      "initializing_shards": 0,
+      "unassigned_shards": 1,
+      "shards": {
+        "0": {
+          "status": "yellow",
+          "primary_active": true,
+          "active_shards": 1,
+          "relocating_shards": 0,
+          "initializing_shards": 0,
+          "unassigned_shards": 1
+        }
+      }
+    }
+  }
+}
+```
