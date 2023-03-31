@@ -3,36 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/reveal.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/theme/league.min.css"
-          id="theme">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/theme/white.min.css" id="theme">
 </head>
 <body>
 <div class="reveal">
     <div class="slides">
         <section data-markdown>
         <textarea data-template>
-          # elasticsearch pour les ops
-          ---
-          ## Programme des 3 jours
+            # Elasticsearch pour les ops
+            ---
+            ## Programme des 3 jours
+            ---
+            ### Jour 1
 
-          ### Jour 1
-            * Introduction à Elasticsearch
-            * Installation et configuration
-            * Indexer des documents, search & update
-            * aggregation, relevance, field mappings
+            * Savoir ce qu'est _Elasticsearch_
+            * Connaitre ses cas d'usage
+            * Connaitre le vocabulaire associé
+            * Comprendre les architectures Elasticsearch
+            * Savoir _indexer_ et _requêter_ des documents
 
-          ---
-          ### Jour 2
-            * maintenance et monitoring d'un cluster
-            * index lifecycle management
-            * securité & RBAC
-            * logstach, kibana, beats
+            ---
+            ### Jour 2
 
-          ---
+            * Comprendre les _mappings_ et savoir les déclarer.
+            * Savoir paramétrer un _index_.
+            * Comprendre et maitriser les _alias_.
+            * Savoir faire des réindexations, split et shrink.
 
-          ### Jours 3
-            * Troubleshooting & debugging
-            * Best practices & perf tuning
+            ---
+
+            ### Jour 3
+
+            * Index Lifecycle Management
+            * Sauvegarde et Restauration
+            * Les API CAT
+            * Les rôles d'un node
+            * Bonnes pratiques d'installation
+            * Savoir dimensionner un cluster
+            * Savoir monitorer un cluster
+            * Savoir faire une maintenance des nodes
 
         </textarea>
         </section>
@@ -41,11 +50,11 @@
 </body>
 
 <script type="module">
-  import Reveal from 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/reveal.esm.min.js'
-  import markdown from 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/plugin/markdown/markdown.esm.min.js'
+    import Reveal from 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/reveal.esm.min.js'
+    import markdown from 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.4.0/plugin/markdown/markdown.esm.min.js'
 
-  Reveal.initialize({
-    plugins: [markdown],
-  })
+    Reveal.initialize({
+        plugins: [markdown],
+    })
 </script>
 </html>
