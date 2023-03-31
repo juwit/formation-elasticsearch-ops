@@ -504,6 +504,23 @@ GET <target>/_search
 
 ### Les types de _query_
 
+#### Match all
+
+Tous les documents !
+
+```http request
+GET starwars_characters/_search
+```
+```json
+{
+  "query": {
+    "match_all": {}
+  }
+}
+```
+
+===
+
 #### Match
 
 Recherche *full-texte* sur un champ :
