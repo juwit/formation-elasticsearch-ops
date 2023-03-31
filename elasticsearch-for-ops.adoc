@@ -1,0 +1,46 @@
+:prewrap!:
+
+:linkattrs:
+
+:sectlinks:
+:sectanchors:
+
+= Elasticsearch pour les ops
+
+== Public cible
+
+Débutants sur Elasticsearch.
+Opérateurs, Administrateurs.
+
+== Pré-requis pour les TP
+
+* un client HTTP (Postman, Insomnia)
+* un accès internet direct (privilégier le wifi "visiteur")
+
+== Programme des 3 jours
+
+=== Jour 1 (Théorie + TP)
+
+* Savoir ce qu'est _Elasticsearch_
+* Connaitre ses cas d'usage
+* Connaitre le vocabulaire associé
+* Comprendre les architectures Elasticsearch
+* Savoir _indexer_ et _requêter_ des documents (TP)
+
+=== Jour 2 (Théorie + TP)
+
+* Comprendre les _mappings_ et savoir les déclarer (TP)
+* Savoir paramétrer un _index_ (TP)
+* Comprendre et maitriser les _alias_ (TP)
+* Savoir faire des réindexations, _split_ et _shrink_ (TP)
+
+=== Jour 3 (Théorie + TP)
+
+* Index Lifecycle Management
+* Sauvegarde et Restauration (TP)
+* Les API CAT (TP)
+* Les rôles d'un node
+* Bonnes pratiques d'installation
+* Savoir dimensionner un cluster
+* Savoir monitorer un cluster
+* Savoir faire une maintenance des nodes
