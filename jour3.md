@@ -6,99 +6,15 @@
 
 ## Objectifs de la journée
 
-* Les rôles d'un node
 * Index Lifecycle Management
+* Sauvegarde et Restauration
+* Les API CAT
+* Les rôles d'un node
+* Bonnes pratiques d'installation
 * Savoir dimensionner un cluster
 * Savoir monitorer un cluster
 * Savoir faire une maintenance des nodes
-* Sauvegarde et Restauration
-* Les API CAT
-* Parcourir Elastic Cloud
-* Bonnes pratiques d'installation
 
----
-
-## Les rôles d'un node
-
-### Un cluster hétérogène
-
-Des machines de type différentes, hardware différent, disques différents.
-
-![](assets/elasticsearch-cluster-tiering.png)
-
-===
-
-### `node.roles: [ master ]`
-
-Contrôle le cluster, suit les _node_, décide d'allouer des shards à des _node_.
-
-Ces _node_ ne stockent que des données de metadata.
-
-Préco Elasticsearch : des _node_ `master` dédiés à partir de 5 ou 6 _node_
-
-=== 
-
-### `node.roles: [ master, voting_only ]`
-
-Participe aux votes pour l'élection d'un _node_ master.
-
-Permet de limiter le nombre de _node_ `master` dédié, en permettant à un _node_ `data` de participer aux élections.
-
-===
-
-### `node.roles: [ data ]`
-
-Stocker des données et traite des requêtes.
-
-Fort besoins en CPU et RAM.
-
-Possible de spécialiser avec une hiérarchisation (tiering).
-
-===
-
-#### `node.roles: [ data_content ]`
-
-Données stables, qui ne doivent pas changer de _tier_.
-
-Données qui doivent être requêtées rapidement, peu d'écritures, forts besoins en CPU pour avoir des perfs. 
-
-Exemple : catalogue produit.
-
-===
-
-#### `node.roles: [ data_hot ]`
-
-![](assets/elasticsearch-tiering.png)
-
-Données stockées sur du hardware récent, I/O intensif (SSD)
-
-Le point d'entrée d'écriture sur des données time-series, données récentes et fréquemment requêtées (qq jours).
-
-===
-
-#### `node.roles: [ data_warm ]`
-
-![](assets/elasticsearch-tiering.png)
-
-Données requêtées moins fréquemment, données des dernières semaines, sur du hardware un peu moins couteux.
-
-Souvent, on n'indexe plus de nouvelles données dans des index `warm`.
-
-===
-
-#### `node.roles: [ data_cold ]`
-
-![](assets/elasticsearch-tiering.png)
-
-Données qui ne sont plus souvent requêtées, on optimise le cout de stockage, les données restent requêtables quand même, mais on accepte que les requêtes soient plus longues.
-
-===
-
-#### `node.roles: [ data_frozen ]`
-
-![](assets/elasticsearch-tiering.png)
-
-Données archivées sous la forme de snapshots, les données restent toujours requêtables, mais les requêtes sont très longues.
 
 ---
 
@@ -358,100 +274,184 @@ Supprimer une policy ne supprime pas les snapshots créés.
 
 ---
 
-## Maintenance des nodes
+## Les API CAT (Compact & Aligned Text)
 
-Préparation au shutdown
+Les API `_cat` sont destinées aux humains, pour la récupération d'infos sur les clusters.
 
-```http request
-PUT _nodes/<node-id>/shutdown
-```
-```json
-{
-  "type": <type>
-}
-```
-
-Les types peuvent être `restart`, `remove`, `replace`.
+Pratique depuis un browser, ou depuis un shell en `curl`.
 
 ===
 
-### Restart
+### Paramètres
 
-`restart` : les shards ne seront pas réalloués pendant le redémarrage.
+* `v` : mode verbose (entêtes)
+* `h` : filtrer les colonnes
+* `format` : `text`, `json`, `yaml`
+* `sort` : tri
+
+===
+
+### `_cat/health`
+
+Santé du cluster
 
 ```http request
-PUT _nodes/<node-id>/shutdown
+GET _cat/health
 ```
-```json
-{
-  "type": "restart",
-  // délai à attendre avant de quand même réallouer les shards
-  "allocation_delay": "20m" 
-}
+```text
+epoch      timestamp cluster                          status node.total node.data shards pri relo init unassign pending_tasks max_task_wait_time active_shards_percent
+1680185251 14:07:31  54e949dcc17043dabbd8f20fa3fb67e7 yellow          1         1     26  26    0    0       12             0                  -                 68.4%
 ```
 
 ===
 
-### Remove
+### `_cat/indices`
 
-`remove` : tous les shards seront réalloués avant que le _node_ ne soit marqué prêt.
-
-```http request
-PUT _nodes/<node-id>/shutdown
-```
-```json
-{
-  "type": "remove"
-}
-```
-
-Jouer un GET pour savoir quand toutes les réallocations ont été faites
+Liste des index avec leurs détails
 
 ```http request
-GET _nodes/<node-id>/shutdown
+GET _cat/indices
 ```
-```json
-{
-  "status": "COMPLETE",
-  "shard_migration": {
-    "status": "COMPLETE",
-    "shard_migrations_remaining": 0,
-    "explanation": "no shard relocation is necessary for a node restart"
-  },
-}
+```text
+health status index         uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+yellow open   pokemons_gen1 Ox63zh_PRq-abU7xNm6VOQ   1   1        151            0     46.9kb         46.9kb
+yellow open   pokemons_gen2 V4V7pF9gTgmdtw95oJHrwA   1   1        100            0     95.3kb         95.3kb
 ```
 
 ===
 
-### Replace
+### `_cat/shards`
 
-`replace` : tous les shards du _node_ seront réalloués vers le node `target`.
-
-```http request
-PUT _nodes/<node-id>/shutdown
-```
-```json
-{
-  "type": "remove",
-  "target_node_name": "<name>"
-}
-```
-
-Jouer un GET pour savoir quand toutes les réallocations ont été faites
+Liste des _shards_ (tous, ou ceux d'un index)
 
 ```http request
-GET _nodes/<node-id>/shutdown
+GET _cat/shards/pokemons_*
 ```
-```json
-{
-  "status": "COMPLETE",
-  "shard_migration": {
-    "status": "COMPLETE",
-    "shard_migrations_remaining": 0,
-    "explanation": "no shard relocation is necessary for a node restart"
-  },
-}
+```text
+index         shard prirep state      docs  store ip            node
+pokemons_gen1 0     p      STARTED     151 46.9kb 10.43.255.116 instance-0000000000
+pokemons_gen1 0     r      UNASSIGNED
+pokemons_gen2 0     p      STARTED     100 95.3kb 10.43.255.116 instance-0000000000
+pokemons_gen2 0     r      UNASSIGNED
 ```
+
+===
+
+### `_cat/nodes`
+
+Liste des _node_
+
+```http request
+GET _cat/nodes
+```
+```text
+ip            heap.percent ram.percent cpu load_1m load_5m load_15m node.role master name
+10.43.255.116           53          98   0    2.52    2.85     3.09 himrst    *      instance-0000000000
+```
+
+===
+
+### `_cat/nodeattrs`
+
+Liste des attributs de nodes (role et custom)
+
+```http request
+GET _cat/nodeattrs
+```
+```text
+node                host          ip            attr                      value
+instance-0000000000 10.43.255.116 10.43.255.116 logical_availability_zone zone-0
+instance-0000000000 10.43.255.116 10.43.255.116 xpack.installed           true
+instance-0000000000 10.43.255.116 10.43.255.116 data                      hot
+instance-0000000000 10.43.255.116 10.43.255.116 server_name               instance-0000000000.54e949dcc17043dabbd8f20fa3fb67e7
+instance-0000000000 10.43.255.116 10.43.255.116 instance_configuration    gcp.es.datahot.n2.68x16x45
+instance-0000000000 10.43.255.116 10.43.255.116 region                    unknown-region
+instance-0000000000 10.43.255.116 10.43.255.116 availability_zone         europe-west1-b
+```
+
+---
+
+## Les rôles d'un node
+
+### Un cluster hétérogène
+
+Des machines de type différentes, hardware différent, disques différents.
+
+![](assets/elasticsearch-cluster-tiering.png)
+
+===
+
+### `node.roles: [ master ]`
+
+Contrôle le cluster, suit les _node_, décide d'allouer des shards à des _node_.
+
+Ces _node_ ne stockent que des données de metadata.
+
+Préco Elasticsearch : des _node_ `master` dédiés à partir de 5 ou 6 _node_
+
+=== 
+
+### `node.roles: [ master, voting_only ]`
+
+Participe aux votes pour l'élection d'un _node_ master.
+
+Permet de limiter le nombre de _node_ `master` dédié, en permettant à un _node_ `data` de participer aux élections.
+
+===
+
+### `node.roles: [ data ]`
+
+Stocker des données et traite des requêtes.
+
+Fort besoins en CPU et RAM.
+
+Possible de spécialiser avec une hiérarchisation (tiering).
+
+===
+
+#### `node.roles: [ data_content ]`
+
+Données stables, qui ne doivent pas changer de _tier_.
+
+Données qui doivent être requêtées rapidement, peu d'écritures, forts besoins en CPU pour avoir des perfs. 
+
+Exemple : catalogue produit.
+
+===
+
+#### `node.roles: [ data_hot ]`
+
+![](assets/elasticsearch-tiering.png)
+
+Données stockées sur du hardware récent, I/O intensif (SSD)
+
+Le point d'entrée d'écriture sur des données time-series, données récentes et fréquemment requêtées (qq jours).
+
+===
+
+#### `node.roles: [ data_warm ]`
+
+![](assets/elasticsearch-tiering.png)
+
+Données requêtées moins fréquemment, données des dernières semaines, sur du hardware un peu moins couteux.
+
+Souvent, on n'indexe plus de nouvelles données dans des index `warm`.
+
+===
+
+#### `node.roles: [ data_cold ]`
+
+![](assets/elasticsearch-tiering.png)
+
+Données qui ne sont plus souvent requêtées, on optimise le cout de stockage, les données restent requêtables quand même, mais on accepte que les requêtes soient plus longues.
+
+===
+
+#### `node.roles: [ data_frozen ]`
+
+![](assets/elasticsearch-tiering.png)
+
+Données archivées sous la forme de snapshots, les données restent toujours requêtables, mais les requêtes sont très longues.
 
 ---
 
@@ -468,10 +468,10 @@ GET _nodes/<node-id>/shutdown
 
 Laisser Elasticsearch allouer la mémoire de la machine pour la JVM.
 
-Paramètres proposés : 
+Paramètres proposés :
 
 * Utiliser la JVM packagée avec Elasticsearch ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/setup.html#jvm-version))
-* `-Xms` = `-Xmx` : pour tout de suite allouer la RAM nécessaire 
+* `-Xms` = `-Xmx` : pour tout de suite allouer la RAM nécessaire
   * Positionner la valeur à 50% de la RAM disponible sur la VM ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/advanced-configuration.html#set-jvm-heap-size))
 * Utiliser le G1GC : `-XX:+UseG1GC`
 
@@ -496,7 +496,7 @@ root - nofile 65535
 ===
 
 #### Taille maximale d'un fichier
- 
+
 Elasticsearch va créer de gros fichiers pour chaque shared (plusieurs giga octets).
 
 La taille max des fichiers ne doit pas être limitée.
@@ -584,9 +584,9 @@ echo net.ipv4.tcp_retries2=5 | tee /etc/sysctl.d/99-tcp_retries2.conf
 
 Elasticsearch utilise du code natif (JNA - Java Native Access)
 
-* ce code est extrait à l'exécution dans le répertoire temporaire `/tmp` pour être exécuté
-* il ne faut pas de flag `noexec` sur le point de montage `/tmp`
-* ou changer de répertoire avec la variable d'env `ES_TMPDIR`
+* extrait dans `/tmp` pour être exécuté
+* pas de flag `noexec` sur le point de montage `/tmp`
+* configurable avec `ES_TMPDIR`
 
 Configuration :
 
@@ -598,6 +598,61 @@ export ES_TMPDIR=/usr/share/elasticsearch/tmp
 # config/jvm.options
 -Djava.io.tmpdir=${ES_TMPDIR}
 ```
+
+---
+
+## Dimensionnement d'un cluster
+
+Les ratios pratiqués par Elasticsearch sur Elastic Cloud sont un bon point de départ.
+
+### Ratios Stockage / RAM
+
+* en data `hot` et `content` : 1/45 : 1 Go de RAM pour 45 Go de stockage
+* en data `warm` : 1/190 : 1 Go de RAM pour 190 Go de stockage
+
+===
+
+### Ratios CPU / RAM
+
+* en data `hot` et `content` : 1/4 : 1 CPU pour 4 Go de RAM
+* en data `warm` : 1/8 : 1 CPU pour 8 Go de RAM
+
+===
+
+### CPU - Éléments à prendre en compte
+
+Elasticsearch utilise des pool de threads pour l'indexation et la recherche.
+
+La taille du pool de `search` est :
+
+`1 + (nombre_cpu * 3) / 2`
+
+Cette valeur limite le nombre de recherches possibles en parallèle sur un node.
+
+Penser donc à avoir suffisament de CPU sur les node qui hébergent des _shards_ souvent requêtés.
+
+===
+
+### Capacité de disque
+
+Éléments à prendre en compte :
+
+* Volume de données nominal
+* Facteur de réplication
+* Perte potentielle d'un ou plusieurs node
+* Seuil de surveillance à 15%
+
+===
+
+#### Formules de calcul
+
+`data_total = data * (nombre_replicas + 1)`
+
+`stockage_total = data_total * 1.15`
+
+`nodes = (stockage_total / stockage_node) + 1`
+
+Pour stocker 1 To utile avec 1 replica, sur des nodes avec 500Go de disque, il faut 6 nodes.
 
 ---
 
@@ -640,7 +695,7 @@ GET /_cluster/health
 
 ### Cluster Health Level
 
-Il est aussi possible de récupérer des détails au niveau des index ou des shards :
+Détails au niveau des index ou des shards :
 
 ```http request
 GET /_cluster/health?level=indices
@@ -814,103 +869,6 @@ GET _cluster/allocation/explain
 
 ---
 
-## Les API CAT (Compact & Aligned Text)
-
-Les API `_cat` sont destinées aux humains, pour la récupération d'infos sur les clusters.
-
-Pratique depuis un browser, ou depuis un shell en `curl`.
-
-===
-
-### Paramètres
-
-* `v` : mode verbose (entêtes)
-* `h` : filtrer les colonnes
-* `format` : `text`, `json`, `yaml`
-* `sort` : tri
-
-===
-
-### `_cat/health`
-
-Santé du cluster
-
-```http request
-GET _cat/health
-```
-```text
-epoch      timestamp cluster                          status node.total node.data shards pri relo init unassign pending_tasks max_task_wait_time active_shards_percent
-1680185251 14:07:31  54e949dcc17043dabbd8f20fa3fb67e7 yellow          1         1     26  26    0    0       12             0                  -                 68.4%
-```
-
-===
-
-### `_cat/indices`
-
-Liste des index avec leurs détails
-
-```http request
-GET _cat/indices
-```
-```text
-health status index         uuid                   pri rep docs.count docs.deleted store.size pri.store.size
-yellow open   pokemons_gen1 Ox63zh_PRq-abU7xNm6VOQ   1   1        151            0     46.9kb         46.9kb
-yellow open   pokemons_gen2 V4V7pF9gTgmdtw95oJHrwA   1   1        100            0     95.3kb         95.3kb
-```
-
-===
-
-### `_cat/shards`
-
-Liste des _shards_ (tous, ou ceux d'un index)
-
-```http request
-GET _cat/shards/pokemons_*
-```
-```text
-index         shard prirep state      docs  store ip            node
-pokemons_gen1 0     p      STARTED     151 46.9kb 10.43.255.116 instance-0000000000
-pokemons_gen1 0     r      UNASSIGNED
-pokemons_gen2 0     p      STARTED     100 95.3kb 10.43.255.116 instance-0000000000
-pokemons_gen2 0     r      UNASSIGNED
-```
-
-===
-
-### `_cat/nodes`
-
-Liste des _node_
-
-```http request
-GET _cat/nodes
-```
-```text
-ip            heap.percent ram.percent cpu load_1m load_5m load_15m node.role master name
-10.43.255.116           53          98   0    2.52    2.85     3.09 himrst    *      instance-0000000000
-```
-
-===
-
-### `_cat/nodeattrs`
-
-Liste des attributs de nodes (role et custom)
-
-```http request
-GET _cat/nodeattrs
-```
-```text
-node                host          ip            attr                      value
-instance-0000000000 10.43.255.116 10.43.255.116 logical_availability_zone zone-0
-instance-0000000000 10.43.255.116 10.43.255.116 xpack.installed           true
-instance-0000000000 10.43.255.116 10.43.255.116 data                      hot
-instance-0000000000 10.43.255.116 10.43.255.116 server_name               instance-0000000000.54e949dcc17043dabbd8f20fa3fb67e7
-instance-0000000000 10.43.255.116 10.43.255.116 instance_configuration    gcp.es.datahot.n2.68x16x45
-instance-0000000000 10.43.255.116 10.43.255.116 region                    unknown-region
-instance-0000000000 10.43.255.116 10.43.255.116 availability_zone         europe-west1-b
-```
-
----
-
 ## Monitoring d'un cluster
 
 ### Disques
@@ -943,9 +901,9 @@ En fonction du niveau de résilience souhaité, il faut monitorer les disques su
 
 Ex :
 
-Un cluster de 3 machines avec 100Go de disque. 
+Un cluster de 3 machines avec 100Go de disque.
 
-Les disques sont occupés à 80%, doit un total de 240Go. 
+Les disques sont occupés à 80%, doit un total de 240Go.
 
 En cas de perte d'une machine, le cluster basculera en `yellow` et les _shards_ ne pourront pas être réalloués sur les 2 autres machines.
 
@@ -1066,55 +1024,101 @@ GET _cluster/allocation/explain
 
 ---
 
-## Dimensionnement d'un cluster
+## Maintenance des nodes
 
-Les ratios pratiqués par Elasticsearch sur Elastic Cloud sont un bon point de départ.
+Préparation au shutdown
 
-### Ratios Stockage / RAM
+```http request
+PUT _nodes/<node-id>/shutdown
+```
+```json
+{
+  "type": <type>
+}
+```
 
-* en data `hot` et `content` : 1/45 : 1 Go de RAM pour 45 Go de stockage
-* en data `warm` : 1/190 : 1 Go de RAM pour 190 Go de stockage
-
-===
-
-### Ratios CPU / RAM
-
-* en data `hot` et `content` : 1/4 : 1 CPU pour 4 Go de RAM
-* en data `warm` : 1/8 : 1 CPU pour 8 Go de RAM
-
-===
-
-### CPU - Éléments à prendre en compte
-
-Elasticsearch utilise des pool de threads pour l'indexation et la recherche.
-
-La taille du pool de `search` est :
-
-`1 + (nombre_cpu * 3) / 2`
-
-Cette valeur limite le nombre de recherches possibles en parallèle sur un node.
-
-Penser donc à avoir suffisament de CPU sur les node qui hébergent des _shards_ souvent requêtés.
+Les types peuvent être `restart`, `remove`, `replace`.
 
 ===
 
-### Capacité de disque
+### Restart
 
-Éléments à prendre en compte :
+`restart` : les shards ne seront pas réalloués pendant le redémarrage.
 
-* Volume de données nominal
-* Facteur de réplication
-* Perte potentielle d'un ou plusieurs node
-* Seuil de surveillance à 15%
+```http request
+PUT _nodes/<node-id>/shutdown
+```
+```json
+{
+  "type": "restart",
+  // délai à attendre avant de quand même réallouer les shards
+  "allocation_delay": "20m" 
+}
+```
 
 ===
 
-#### Formules de calcul
+### Remove
 
-`data_total = data * (nombre_replicas + 1)`
+`remove` : tous les shards seront réalloués avant que le _node_ ne soit marqué prêt.
 
-`stockage_total = data_total * 1.15`
+```http request
+PUT _nodes/<node-id>/shutdown
+```
+```json
+{
+  "type": "remove"
+}
+```
 
-`nodes = (stockage_total / stockage_node) + 1`
+===
 
-Pour stocker 1 To utile avec 1 replica, sur des nodes avec 500Go de disque, il faut 6 nodes.
+Jouer un GET pour savoir quand toutes les réallocations ont été faites
+
+```http request
+GET _nodes/<node-id>/shutdown
+```
+```json
+{
+  "status": "COMPLETE",
+  "shard_migration": {
+    "status": "COMPLETE",
+    "shard_migrations_remaining": 0,
+    "explanation": "no shard relocation is necessary for a node restart"
+  },
+}
+```
+
+===
+
+### Replace
+
+`replace` : tous les shards du _node_ seront réalloués vers le node `target`.
+
+```http request
+PUT _nodes/<node-id>/shutdown
+```
+```json
+{
+  "type": "remove",
+  "target_node_name": "<name>"
+}
+```
+
+===
+
+Jouer un GET pour savoir quand toutes les réallocations ont été faites
+
+```http request
+GET _nodes/<node-id>/shutdown
+```
+```json
+{
+  "status": "COMPLETE",
+  "shard_migration": {
+    "status": "COMPLETE",
+    "shard_migrations_remaining": 0,
+    "explanation": "no shard relocation is necessary for a node restart"
+  },
+}
+```
