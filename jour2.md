@@ -427,7 +427,7 @@ Exemple d'un mapping généré
 
 Le mapping multiple crée en fait plusieurs champs.
 
-Dans l'exemple précédent, on peut requêter de cette manière:
+Requêtes sur l'exemple précédent :
 
 ```json
 {
@@ -774,9 +774,8 @@ PUT dragonball_characters
 
 ===
 
-### Filtres
+### Filtres sur alias
 
-Il est aussi possible de déclarer des filtres sur un alias.
 Les documents remontés à la recherche sur l'alias seront filtrés avec la requête donnée.
 
 ```http request
@@ -1010,7 +1009,7 @@ GET dragonball_characters/_search?routing=gentil
 
 ---
 
-## Récupérer des infos sur les index
+## Détails d'un index
 
 Aliases, Mappings, Settings
 
@@ -1023,34 +1022,15 @@ GET starwars_characters
     "aliases": {},
     "mappings": {
       "properties": {
-        "affiliation": {
-          "type": "keyword"
-        },
-        "name": {
-          "type": "keyword"
-        },
-        "species": {
-          "type": "keyword"
-        }
+        ...
       }
     },
     "settings": {
       "index": {
-        "routing": {
-          "allocation": {
-            "include": {
-              "_tier_preference": "data_content"
-            }
-          }
-        },
         "number_of_shards": "1",
         "provided_name": "starwars_characters",
         "creation_date": "1678875502566",
-        "number_of_replicas": "1",
-        "uuid": "P904M3SVSk-ZlKbU2QuKmA",
-        "version": {
-          "created": "8060299"
-        }
+        "number_of_replicas": "1"
       }
     }
   }
