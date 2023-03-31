@@ -2,8 +2,6 @@
 
 ## Jour 1
 
-https://gitlab.com/groups/gitlab-org/-/uploads/e21f315177585c93ea6e748470367dca/elasticsearch-sizing-and-capacity-planning.pdf
-
 ---
 
 ## Comment lire ces slides ?
