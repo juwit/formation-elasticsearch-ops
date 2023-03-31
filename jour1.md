@@ -711,7 +711,7 @@ Le cluster contient plusieurs index :
 
 ### Correction des requêtes
 
-![](assets/Coding-workshop.png)
+![](assets/Certification.png)
 
 ---
 

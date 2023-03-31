@@ -507,7 +507,7 @@ Ces index contiennent des documents ayant cette forme :
 
 ### Correction des mappings
 
-![](assets/Coding-workshop.png)
+![](assets/Certification.png)
 
 ===
 
@@ -908,7 +908,7 @@ Créez un _index template_ portant votre nom :
 
 ### Correction des alias et index template
 
-![](assets/Coding-workshop.png)
+![](assets/Certification.png)
 
 ---
 
@@ -1314,7 +1314,7 @@ Nous reprenons les index manipulés jusqu'à présent :
 
 ### Correction Réindexation, Split & Shrink
 
-![](assets/Coding-workshop.png)
+![](assets/Certification.png)
 
 ---
 
