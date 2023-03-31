@@ -273,6 +273,9 @@ POST starwars_characters/_doc/1
    "favorite_quote": "I am a Jedi, like my father before me."
 }
 ```
+
+===
+
 ```json
 {
   "_index": "starwars_characters",
@@ -305,6 +308,9 @@ POST starwars_characters/_doc/2
    "favorite_quote": "I find your lack of faith disturbing."
 }
 ```
+
+===
+
 ```json
 {
   "_index": "starwars_characters",
@@ -568,6 +574,8 @@ Paramètres: `gt`, `gte`, `lt`, `lte` (greater/lower than or equal).
 Les recherches peuvent être de plusieurs types et sur plusieurs champs
 
 Utiliser une recherche `bool`, avec un tableau de `must` ou `must_not`.
+
+===
 
 ```http request
 GET dragonball_characters/_search
