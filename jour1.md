@@ -31,14 +31,6 @@ La touche `ESPACE` permet d'aller au slide suivant.
 * Savoir _indexer_ et _requêter_ des documents
 
 ---
-<!-- .slide: data-visibility="hidden" -->
-## Plan
-* Introduction à Elasticsearch
-* Installation & configuration
-* Indexer des documents, search
-* Field Mappings
-
----
 ## Elasticsearch, c'est quoi ?
 * Moteur de recherche
 * Distribué
