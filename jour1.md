@@ -206,6 +206,12 @@ _ELK_ = Ancien nom de l'_Elastic Stack_ : *E*lasticsearch + *L*ogstash + *K*iban
 
 ===
 
+> Shards primaires et replicas & nodes
+
+![](assets/elasticsearch-index-shards-nodes.png)
+
+===
+
 > Sécurité, Users & RBAC
 > 
 > Les lectures/écritures sur Elasticsearch doivent être sécurisées.
