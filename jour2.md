@@ -952,6 +952,31 @@ PUT <index>
 
 ### Router des shards manuellement
 
+Il est possible de préciser manuellement une allocation de shard :
+
+* forcer l'allocation d'un _shard_ à un _node_
+* déplacer un _shard_ d'un _node_ à un autre
+
+===
+
+#### Routage d'un shard
+
+```http request
+POST /_cluster/reroute
+```
+```json
+{
+  "commands": [
+    {
+      "move": {
+        "index": "dragonball_characters", "shard": 0,
+        "from_node": "nodeA", "to_node": "nodeB"
+      }
+    }
+  ]
+}
+```
+
 ---
 
 ### Distribution des documents dans les shards (Partitionnement)
