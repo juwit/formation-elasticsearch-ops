@@ -105,6 +105,86 @@ PUT _ilm/policy/<my_policy>
 }
 ```
 
+===
+
+### Assignation d'une policy à un index
+
+[//]: # (TODO)
+
+===
+
+### Surveiller l'exécution d'une policy
+
+Il est possible d'obtenir des infos sur l'execution d'une ILM sur un index :
+
+```http request
+GET dragonball_characters/_ilm/explain
+```
+```json
+{
+  "indices": {
+    "dragonball_characters": {
+      "index": "dragonball_characters",
+      "index_creation_date_millis": 1538475653281,
+      "time_since_index_creation": "15s",
+      "managed": true,
+      "policy": "my_policy",
+      "lifecycle_date_millis": 1538475653281,
+      "age": "15s",
+      "phase": "new",
+      "phase_time_millis": 1538475653317,
+      "action": "complete"
+      "action_time_millis": 1538475653317,
+      "step": "complete",
+      "step_time_millis": 1538475653317,
+      "step_info": {
+        "message": "Waiting for all shard copies to be active",
+        "shards_left_to_allocate": -1,
+        "all_shards_active": false,
+        "number_of_replicas": 2
+      },
+      "phase_execution": {
+        "policy": "my_lifecycle3",
+        "phase_definition": {
+          "min_age": "0ms",
+          "actions": {
+            "rollover": {
+              "max_age": "30s"
+            }
+          }
+        },
+        "version": 3,
+        "modified_date": "2018-10-15T13:21:41.576Z",
+        "modified_date_in_millis": 1539609701576
+      }
+    }
+  }
+}
+```
+
+===
+
+#### Champs à surveiller
+
+A surveiller:
+
+* `failed_step` : étape qui a échouée
+* `step_info` : détails sur l'erreur
+
+```json
+{
+  "failed_step": "check-rollover-ready",
+  "is_auto_retryable_error": true,
+  "failed_step_retry_count": 1,
+  "step_info": {
+    "type": "cluster_block_exception",
+    "reason": "index [test-000057/H7lF9n36Rzqa-KfKcnGQMg] blocked by: [FORBIDDEN/5/index read-only (api)",
+    "index_uuid": "H7lF9n36Rzqa-KfKcnGQMg",
+    "index": "test-000057"
+  }
+}
+```
+
 ---
 
 ## Sauvegarde et Restauration
