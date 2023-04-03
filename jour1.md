@@ -118,6 +118,17 @@ _ELK_ = Ancien nom de l'_Elastic Stack_ : *E*lasticsearch + *L*ogstash + *K*iban
 
 ![](assets/elasticsearch-elastic-stack-architecture.png) <!-- .element: class="r-stretch" -->
 
+
+===
+
+## La gouvernance d'Elasticsearch
+
+Elasticsearch est développé par la société _Elasticsearch_.
+
+Le code est disponible, en Open Source sur [Github](https://github.com/elastic/elasticsearch).
+
+Licence en SSPL (Server Side Public Licence). Cette licence autorise l'utilisation gratuite du produit, mais exige le reversement de toutes les sources si on vend le produit en SaaS.
+
 ---
 
 ## Définitions & Vocabulaire
