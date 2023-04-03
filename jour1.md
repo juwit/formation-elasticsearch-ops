@@ -501,7 +501,20 @@ GET starwars_characters/_search
 }
 ```
 
-10 documents remontés par défaut. Paramètres `from` et `to` pour faire de la pagination.
+===
+
+#### Recherche et pagination
+
+10 documents remontés par défaut. 
+
+Paramètres `from` et `size` pour faire de la pagination.
+
+```json
+{
+  "from": 2, // numéro de la page
+  "size": 20 // taille de la page
+}
+```
 
 ===
 
