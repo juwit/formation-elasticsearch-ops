@@ -873,6 +873,36 @@ De nombreux _index templates_ sont instanciés par Elasticsearch et Kibana, atte
 
 ---
 
+## Détails d'un index
+
+Aliases, Mappings, Settings
+
+```http request
+GET starwars_characters
+```
+```json
+{
+  "starwars_characters": {
+    "aliases": {},
+    "mappings": {
+      "properties": {
+        ...
+      }
+    },
+    "settings": {
+      "index": {
+        "number_of_shards": "1",
+        "provided_name": "starwars_characters",
+        "creation_date": "1678875502566",
+        "number_of_replicas": "1"
+      }
+    }
+  }
+}
+```
+
+---
+
 ## TP Alias, Settings et Templates
 
 ![](assets/Coding-workshop.png)
@@ -911,7 +941,7 @@ Créez un _index template_ portant votre nom :
 
 ---
 
-## Allocation des shards d'un index. ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/shard-allocation-filtering.html))
+## Allocation des shards aux _nodes_. ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/shard-allocation-filtering.html))
 
 Dans un cluster hétérogène, on veut pouvoir contrôler l'allocation des shards sur des _node_.
 
@@ -936,13 +966,15 @@ node.attr.region: europe-west1
 `index.routing.allocation` permet de contrôler l'allocation de l'index à des _nodes_
 
 ```http request
-PUT <index>
+PUT <index>/_settings
 ```
 ```json
 {
-  "index.routing.allocation.include.region": ["europe-west1","europe-west9"],
-  "index.routing.allocation.require.disk": "ssd",
-  "index.routing.allocation.exclude.size": "small"
+  "settings": {
+    "index.routing.allocation.include.region": ["europe-west1","europe-west9"],
+    "index.routing.allocation.require.disk": "ssd",
+    "index.routing.allocation.exclude.size": "small"
+  }
 }
 ```
 
@@ -979,9 +1011,9 @@ POST /_cluster/reroute
 
 ---
 
-### Distribution des documents dans les shards (Partitionnement)
+## Distribution des documents dans les shards (Partitionnement)
 
-Par défaut, Elasticsearch distribue les documents dans les shards en utilisant choisissant le shard en fonction de l'id du document.
+Elasticsearch distribue les documents dans les shards en fonction de l'id du document.
 
 Il est possible de préciser une "clé de routage", pour regrouper des documents similaires dans un même shard.
 
@@ -989,7 +1021,7 @@ Attention au risque d'avoir des shards non homogènes.
 
 ===
 
-#### Indexation avec clé de routage
+### Indexation avec clé de routage
 
 Ajouter un paramètre `routing` lors de l'indexation :
 
@@ -1011,55 +1043,12 @@ POST dragonball_characters/_doc?routing=gentil
 
 ===
 
-#### Recherche avec clé de routage
+### Recherche avec clé de routage
 
 Ajouter un paramètre `routing` lors de la recherche, permet de cibler uniquement les shards qui portent la partition
 
 ```http request
 GET dragonball_characters/_search?routing=gentil
-```
-```json
-{
-  "took": 2,
-  "timed_out": false,
-  "_shards": {
-    "total": 10,
-    "successful": 10,
-    "skipped": 0,
-    "failed": 0
-  },
-  "hits": {}
-}
-```
-
----
-
-## Détails d'un index
-
-Aliases, Mappings, Settings
-
-```http request
-GET starwars_characters
-```
-```json
-{
-  "starwars_characters": {
-    "aliases": {},
-    "mappings": {
-      "properties": {
-        ...
-      }
-    },
-    "settings": {
-      "index": {
-        "number_of_shards": "1",
-        "provided_name": "starwars_characters",
-        "creation_date": "1678875502566",
-        "number_of_replicas": "1"
-      }
-    }
-  }
-}
 ```
 
 ---
