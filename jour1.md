@@ -271,7 +271,7 @@ Prévoir une norme de nommage des index pour s'y retrouver.
 
 ===
 
-### Indexation d'un document
+### Indexation d'un document ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html))
 
 ```http request
 POST <index_name>/_doc/<id>
