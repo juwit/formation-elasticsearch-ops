@@ -693,6 +693,24 @@ GET /_cluster/health
 
 ===
 
+#### status `green`
+
+![](assets/elasticsearch-index-status-green.png)
+
+===
+
+#### status `yellow`
+
+![](assets/elasticsearch-index-status-yellow.png)
+
+===
+
+#### status `red`
+
+![](assets/elasticsearch-index-status-red.png)
+
+===
+
 ### Cluster Health Level
 
 Détails au niveau des index ou des shards :
