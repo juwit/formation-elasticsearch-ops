@@ -430,7 +430,7 @@ Une requête est traitée dans un _shard_ par un seul thread, néanmoins, chaque
 
 ===
 
-### Compter les documents
+### Compter les documents ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-count.html))
 
 ```http request
 GET starwars_characters/_count
@@ -452,7 +452,7 @@ Il est aussi possible de passer une query en paramètre, pour compter les docume
 
 ===
 
-### Recherche de tous les documents
+### Recherche de tous les documents ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-search.html))
 
 ```http request
 GET starwars_characters/_search
@@ -505,7 +505,7 @@ GET starwars_characters/_search
 
 ===
 
-### Le résultat d'une recherche
+### Le résultat d'une recherche ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-search.html#search-api-response-body))
 
 * `took` : durée de traitement de la requête en _ms_
 * `_shards` : infos sur les _shards_ parcourus par la requête
@@ -554,7 +554,7 @@ GET starwars_characters/_search
 
 ===
 
-#### Match
+#### Match ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-query.html))
 
 Recherche *full-texte* sur un champ :
 
@@ -573,7 +573,7 @@ GET starwars_characters/_search
 
 ===
 
-#### Term
+#### Term ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-term-query.html))
 
 Recherche *exacte* sur un champ :
 
@@ -594,7 +594,7 @@ Convient aux ID, username, énumérations...
 
 ===
 
-#### Range
+#### Range ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-range-query.html))
 
 Recherche sur la valeur d'un champ dans une fourchette de valeurs :
 
@@ -619,9 +619,9 @@ Paramètres: `gt`, `gte`, `lt`, `lte` (greater/lower than or equal).
 
 ===
 
-#### Query combinées
+#### Query combinées ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-bool-query.html))
 
-Les recherches peuvent être de plusieurs types et sur plusieurs champs
+Les recherches peuvent être de plusieurs types et sur plusieurs champs.
 
 Utiliser une recherche `bool`, avec un tableau de `must` ou `must_not`.
 
