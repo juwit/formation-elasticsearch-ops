@@ -227,7 +227,7 @@ Chaque requête doit être authentifiée :
 > 
 > Quand un document est stocké dans Elasticsearch, il est disponible au plus tard moins d'une seconde après pour les recherches.
 > 
-> Ce comportement est lié au fonctionnement interne de buffering de Luceneet peut être paramétré.
+> Ce comportement est lié au fonctionnement interne de buffering de Lucene et peut être paramétré.
 
 ---
 
