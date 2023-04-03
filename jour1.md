@@ -356,13 +356,13 @@ ZnhSSkxZY0J2RkQ3VU0yRFE5SG86UjNmMmlCYWJURkMyaTNvc1NOWUZFQQ==
 ```bash
 curl --request GET \
   --url https://fictional-characters.es.europe-west1.gcp.cloud.es.io/dragonball_characters/_search \
-  --header 'Authorization: ApiKey OXBIZkU0Y0J1S1dQTWxSelBBYVQ6VmJZZEEtT1ZTZTJvRXFCR2ZLb1ZPZw=='
+  --header 'Authorization: ApiKey ZnhSSkxZY0J2RkQ3VU0yRFE5SG86UjNmMmlCYWJURkMyaTNvc1NOWUZFQQ=='
 ```
 
 ```bash
 curl --request POST \
   --url https://fictional-characters.es.europe-west1.gcp.cloud.es.io/dragonball_characters/_doc \
-  --header 'Authorization: ApiKey OXBIZkU0Y0J1S1dQTWxSelBBYVQ6VmJZZEEtT1ZTZTJvRXFCR2ZLb1ZPZw==' \
+  --header 'Authorization: ApiKey ZnhSSkxZY0J2RkQ3VU0yRFE5SG86UjNmMmlCYWJURkMyaTNvc1NOWUZFQQ==' \
   --header 'Content-Type: application/json' \
   --data '{}'
 ```
