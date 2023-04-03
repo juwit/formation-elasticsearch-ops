@@ -550,7 +550,7 @@ GET <target>/_search
 
 ### Les types de _query_
 
-#### Match all
+#### Match all ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-all-query.html))
 
 Tous les documents !
 
@@ -619,14 +619,13 @@ GET dragonball_characters/_search
   "query": {
     "range": {
       "power_level": {
-        "gt": 9000
+        "gt": 9000,
+        "lt": 1000
       }
     }
   }
 }
 ```
-
-Aux valeurs numériques, aux dates...
 
 Paramètres: `gt`, `gte`, `lt`, `lte` (greater/lower than or equal).
 
@@ -636,7 +635,7 @@ Paramètres: `gt`, `gte`, `lt`, `lte` (greater/lower than or equal).
 
 Les recherches peuvent être de plusieurs types et sur plusieurs champs.
 
-Utiliser une recherche `bool`, avec un tableau de `must` ou `must_not`.
+Utiliser une recherche `bool`, avec un tableau de `must`, `should`, ou `must_not`.
 
 ===
 
@@ -751,7 +750,7 @@ Le cluster contient plusieurs index :
 * Quel est le nom (`name`) du Pokémon de gen2 ayant pour `id` `175` ?
 * Combien de Pokémon de gen2 ont une `stats.attack` comprise entre `120` et `130` ?
 * Combien de Pokémon de gen2 ont le `type` `dragon` ?
-* Combien de Pokémon de gen2 ont une `stats.attack` entre `120` et `130` _et_ une `stats.defense` supérieure à `100` ?
+* Combien de Pokémon de gen2 ont une `stats.attack` entre `120` et `130` inclus _et_ une `stats.defense` supérieure à `100` ?
 
 ===
 
