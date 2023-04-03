@@ -244,7 +244,7 @@ Chaque requête doit être authentifiée :
 
 ## Indexation de documents
 
-### Création d'un index
+### Création d'un index ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html#indices-create-index))
 
 ```http request
 PUT <index_name>
@@ -258,6 +258,16 @@ PUT <index_name>
 Le nom de l'index est *obligatoire*.
 
 Nous verrons les propriétés plus loin.
+
+===
+
+#### Contraintes sur le nom des index ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html#indices-create-api-path-params))
+
+* minuscules
+* pas de caractères spéciaux hormis `-` et `_`
+
+Prévoir une norme de nommage des index pour s'y retrouver.
+
 
 ===
 
