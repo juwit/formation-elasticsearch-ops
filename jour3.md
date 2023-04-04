@@ -307,6 +307,24 @@ POST _snapshot/<repository>/<snapshot_name>/_restore
 
 ===
 
+### Restaurer un _snapshot_ en renommant les index
+
+On peut renommer les index à la restauration
+
+```http request
+POST _snapshot/<repository>/<snapshot_name>/_restore
+```
+```json
+{
+  "rename_pattern": "(.+)_characters",
+  "rename_replacement": "$1_index"
+}
+```
+
+Va renommer `dragonball_characters` en `dragonball_index`.
+
+===
+
 ### Supprimer un _snapshot_
 
 ```http request
