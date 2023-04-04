@@ -24,7 +24,7 @@
 
 ===
 
-### Dynamic Field Mapping
+### Dynamic Field Mapping ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/dynamic-field-mapping.html))
 
 * pas de déclaration préalable de la structure de l'_index_ (_mapping_)
 * Elasticsearch essaye de deviner les types des différents champs
@@ -107,7 +107,7 @@ Le field mapping permet de déclarer le typage des champs manuellement.
 
 ===
 
-### Les types de champs les plus courants
+### Les types de champs les plus courants ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-types.html))
 
 * `text` : recherches _full texte_
   ex : `"Votre manque de foi me consterne."`
@@ -142,7 +142,7 @@ Il n'est pas possible de modifier le mapping d'un champ existant (il faut réind
 
 ===
 
-### Déclaration du mapping à la création de l'index
+### Déclaration du mapping à la création de l'index ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/explicit-mapping.html))
 
 Avec la propriété `mapping`
 
@@ -210,7 +210,7 @@ Les chaînes passées à une requête `match` suivent le même process
 
 ===
 
-#### Analyseurs de texte
+#### Analyseurs de texte ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-analyzers.html))
 
 `standard` :
 
@@ -593,7 +593,7 @@ GET starwars_characters/_search
 
 ===
 
-### Fields, et mapping multiples
+### Fields, et mapping multiples ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/multi-fields.html))
 
 Il est possible de faire du mapping multiple sur des champs.
 
