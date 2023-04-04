@@ -1561,7 +1561,7 @@ Nous reprenons les index manipulés jusqu'à présent :
 * Réindexez les deux index `pokemons_gen1` et `pokemons_gen2` en un seul index :
   * Qui porte votre nom
   * Qui possède un seul shard
-* Faites un split de ce nouvel index vers un index qui possède `5` _shards_
+* Faites un split de ce nouvel index vers un index qui possède `6` _shards_
 * Faites un shrink de cet index splitté, vers un nouvel index qui possède `2` _shards_.
 
 ===
