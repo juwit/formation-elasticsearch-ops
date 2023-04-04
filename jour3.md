@@ -372,6 +372,41 @@ Supprimer une policy ne supprime pas les snapshots créés.
 
 ---
 
+## Sauvegarde et restauration
+
+![](assets/Coding-workshop.png)
+
+===
+
+### Sujet
+
+On réutilise les mêmes index qu'hier :
+
+* pokemons_gen1
+* pokemons_gen2
+
+Il existe un _snapshot repository_ `found-snapshots` sur le cluster.
+
+===
+
+#### Créez un snapshot
+
+* Créez un snapshot contenant les deux index `pokemons_gen1` et `pokemons_gen2`
+* Restaurez l'index `pokemons_gen2` dans un nouvel index qui porte votre nom (rename)
+* Vérifiez que les données sont bien restaurées :
+  * mapping
+  * settings
+  * bon nombre de documents
+
+===
+
+### Correction de la sauvegarde et restauration
+
+![](assets/Certification.png)
+
+===
+---
+
 ## Les API CAT (Compact & Aligned Text)
 
 Les API `_cat` sont destinées aux humains, pour la récupération d'infos sur les clusters.
