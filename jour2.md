@@ -206,6 +206,8 @@ Les données des champs `text` sont analysées pour être indexées en vue d'une
 * tokenization : découpage du texte en tokens (mots)
 * normalization : passage en minuscules, réduction des mots (singulier, infinitif)
 
+Les chaînes passées à une requête `match` suivent le même process
+
 ===
 
 #### Analyseurs de texte
@@ -259,6 +261,233 @@ Exemple: 2 docs, 1 champ avec l'analyseur `french` :
   "pri.store.size": "11.1kb"
 }
 ```
+
+===
+
+#### Test des analyseurs de texte ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-analyze.html))
+
+```http request
+GET /_analyze
+```
+```json
+{
+  "analyzer" : "standard",
+  "text" : "I am the prince of all Saiyans once again! And I am not like Kakarot!"
+}
+```
+
+```json
+{
+  "tokens": [
+    {
+      "token": "i",
+      "start_offset": 0,
+      "end_offset": 1,
+      "type": "<ALPHANUM>",
+      "position": 0
+    },
+    {
+      "token": "am",
+      "start_offset": 2,
+      "end_offset": 4,
+      "type": "<ALPHANUM>",
+      "position": 1
+    },
+    {
+      "token": "the",
+      "start_offset": 5,
+      "end_offset": 8,
+      "type": "<ALPHANUM>",
+      "position": 2
+    },
+    {
+      "token": "prince",
+      "start_offset": 9,
+      "end_offset": 15,
+      "type": "<ALPHANUM>",
+      "position": 3
+    },
+    {
+      "token": "of",
+      "start_offset": 16,
+      "end_offset": 18,
+      "type": "<ALPHANUM>",
+      "position": 4
+    },
+    {
+      "token": "all",
+      "start_offset": 19,
+      "end_offset": 22,
+      "type": "<ALPHANUM>",
+      "position": 5
+    },
+    {
+      "token": "saiyans",
+      "start_offset": 23,
+      "end_offset": 30,
+      "type": "<ALPHANUM>",
+      "position": 6
+    },
+    {
+      "token": "once",
+      "start_offset": 31,
+      "end_offset": 35,
+      "type": "<ALPHANUM>",
+      "position": 7
+    },
+    {
+      "token": "again",
+      "start_offset": 36,
+      "end_offset": 41,
+      "type": "<ALPHANUM>",
+      "position": 8
+    },
+    {
+      "token": "and",
+      "start_offset": 43,
+      "end_offset": 46,
+      "type": "<ALPHANUM>",
+      "position": 9
+    },
+    {
+      "token": "i",
+      "start_offset": 47,
+      "end_offset": 48,
+      "type": "<ALPHANUM>",
+      "position": 10
+    },
+    {
+      "token": "am",
+      "start_offset": 49,
+      "end_offset": 51,
+      "type": "<ALPHANUM>",
+      "position": 11
+    },
+    {
+      "token": "not",
+      "start_offset": 52,
+      "end_offset": 55,
+      "type": "<ALPHANUM>",
+      "position": 12
+    },
+    {
+      "token": "like",
+      "start_offset": 56,
+      "end_offset": 60,
+      "type": "<ALPHANUM>",
+      "position": 13
+    },
+    {
+      "token": "kakarot",
+      "start_offset": 61,
+      "end_offset": 68,
+      "type": "<ALPHANUM>",
+      "position": 14
+    }
+  ]
+}
+```
+
+===
+
+#### Les analyseurs disponibles ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-analyzers.html))
+
+`standard`, `english`, `french`, ...
+
+```http request
+GET /_analyze
+```
+```json
+{
+  "analyzer" : "english",
+  "text" : "I am the prince of all Saiyans once again! And I am not like Kakarot!"
+}
+```
+
+```json
+{
+  "tokens": [
+    {
+      "token": "i",
+      "start_offset": 0,
+      "end_offset": 1,
+      "type": "<ALPHANUM>",
+      "position": 0
+    },
+    {
+      "token": "am",
+      "start_offset": 2,
+      "end_offset": 4,
+      "type": "<ALPHANUM>",
+      "position": 1
+    },
+    {
+      "token": "princ",
+      "start_offset": 9,
+      "end_offset": 15,
+      "type": "<ALPHANUM>",
+      "position": 3
+    },
+    {
+      "token": "all",
+      "start_offset": 19,
+      "end_offset": 22,
+      "type": "<ALPHANUM>",
+      "position": 5
+    },
+    {
+      "token": "saiyan",
+      "start_offset": 23,
+      "end_offset": 30,
+      "type": "<ALPHANUM>",
+      "position": 6
+    },
+    {
+      "token": "onc",
+      "start_offset": 31,
+      "end_offset": 35,
+      "type": "<ALPHANUM>",
+      "position": 7
+    },
+    {
+      "token": "again",
+      "start_offset": 36,
+      "end_offset": 41,
+      "type": "<ALPHANUM>",
+      "position": 8
+    },
+    {
+      "token": "i",
+      "start_offset": 47,
+      "end_offset": 48,
+      "type": "<ALPHANUM>",
+      "position": 10
+    },
+    {
+      "token": "am",
+      "start_offset": 49,
+      "end_offset": 51,
+      "type": "<ALPHANUM>",
+      "position": 11
+    },
+    {
+      "token": "like",
+      "start_offset": 56,
+      "end_offset": 60,
+      "type": "<ALPHANUM>",
+      "position": 13
+    },
+    {
+      "token": "kakarot",
+      "start_offset": 61,
+      "end_offset": 68,
+      "type": "<ALPHANUM>",
+      "position": 14
+    }
+  ]
+}
+```
+
 
 ===
 
