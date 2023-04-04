@@ -711,6 +711,41 @@ ou
 }
 ```
 
+===
+
+### Indexations après un mapping explicit
+
+Après avoir spécifié un mapping, lors d'une indexation, les données seront converties pour respecter les types précisés, par exemple :
+
+* les `"true"` seront convertis en `true`
+* les `"12"` seront convertis en `12`
+
+===
+
+#### Erreurs de type à l'indexation
+
+Si un document à indexer ne peut pas être adapté pour respecter les types précisés, une erreur détaillée est retournée :
+
+```json
+{
+  "error": {
+    "root_cause": [
+      {
+        "type": "mapper_parsing_exception",
+        "reason": "failed to parse field [height] of type [integer] in document with id '152'. Preview of field's value: 'douze'"
+      }
+    ],
+    "type": "mapper_parsing_exception",
+    "reason": "failed to parse field [height] of type [integer] in document with id '152'. Preview of field's value: 'douze'",
+    "caused_by": {
+      "type": "number_format_exception",
+      "reason": "For input string: \"douze\""
+    }
+  },
+  "status": 400
+}
+```
+
 ---
 
 ## TP Mapping
