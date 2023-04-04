@@ -232,6 +232,8 @@ Il sera toujours possible de les requêter mais c'est contre-performant.
 
 ### `text` vs `keyword`
 
+#### `text` ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/text.html))
+
 Les données des champs `text` sont analysées pour être indexées en vue d'une recherche _full texte_ :
 
 * tokenization : découpage du texte en tokens (mots)
@@ -551,7 +553,7 @@ PUT starwars_characters
 
 ===
 
-#### `keyword`
+#### `keyword` ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/keyword.html))
 
 Les données des champs `keyword` sont prévues pour faire un matching _exact_, pas d'analyse.
 
@@ -887,6 +889,31 @@ PUT dragonball_characters
 }
 ```
 
+===
+
+### Mettre à jour les settings d'un index existant
+
+```http request
+PUT dragonball_characters/_settings
+```
+```json
+{
+  "settings": {
+    "index": {
+      "number_of_replicas": 1
+    }
+  }
+}
+```
+
+===
+
+#### Settings dynamiques ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/8.7/index-modules.html#index-modules-settings))
+
+Tous les settings ne peuvent pas être mis à jour :
+
+* `index.number_of_shards` le nombre de _shards_ est *fixé* à la création et ne peut pas être modifié
+
 ---
 
 ## Les alias
@@ -917,7 +944,7 @@ POST _aliases
 
 ===
 
-### Créer un alias sur un index
+### Créer un alias sur un index ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/8.7/indices-add-alias.html))
 
 ```http request
 PUT dragonball_characters/_alias
@@ -936,7 +963,7 @@ PUT dragonball_characters/_alias
 
 ===
 
-### Lister les alias présents dans un cluster
+### Lister les alias présents dans un cluster ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/8.7/indices-get-alias.html))
 
 ```http request
 GET _alias
@@ -1097,7 +1124,7 @@ PUT dragonball_characters/_alias
 
 ---
 
-## Les index templates
+## Les index templates ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/8.7/index-templates.html))
 
 Un modèle d'index permet de préparer la création des futurs index :
 
@@ -1110,7 +1137,7 @@ Tous futurs index nommés suivant le pattern de nommage déclaré hériteront de
 
 ===
 
-### Création ou modification d'un template
+### Création ou modification d'un template ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/8.7/indices-put-template.html))
 
 ```http request
 PUT /_index_template/characters_template
@@ -1286,7 +1313,7 @@ Il est possible de préciser manuellement une allocation de shard :
 
 ===
 
-#### Routage d'un shard
+#### Routage d'un shard ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/8.7/cluster-reroute.html))
 
 ```http request
 POST /_cluster/reroute
@@ -1306,7 +1333,7 @@ POST /_cluster/reroute
 
 ---
 
-## Distribution des documents dans les shards (Partitionnement)
+## Distribution des documents dans les shards (Partitionnement) ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/8.7/mapping-routing-field.html))
 
 Elasticsearch distribue les documents dans les shards en fonction de l'id du document.
 
@@ -1378,7 +1405,7 @@ POST /starwars_characters/_open
 
 ===
 
-### Index Blocks
+### Index Blocks ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/8.7/index-modules-blocks.html))
 
 Les _index blocks_ permettent de bloquer certaines opérations sur les index :
 
@@ -1427,7 +1454,7 @@ La réindexation ne copie pas les _settings_ ou _mappings_, la destination doit 
 
 ===
 
-### Réindexer
+### Réindexer ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/8.7/docs-reindex.html))
 
 ```http request
 POST _reindex
@@ -1496,7 +1523,7 @@ Le _shrink_ doit en plus avoir l'ensemble des shards localisés sur un même _no
 
 ===
 
-#### Exécuter un _Split_
+#### Exécuter un _Split_ ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/8.7/indices-split-index.html))
 
 ##### Passer l'index en read-only
 
@@ -1535,7 +1562,7 @@ POST /starwars_characters/_split/starwars_characters-split
 
 ===
 
-#### Exécuter un _Shrink_
+#### Exécuter un _Shrink_ ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/8.7/indices-shrink-index.html))
 
 ##### Passer l'index en read-only, et allouer tous les shards sur un seul node
 
