@@ -199,6 +199,37 @@ GET starwars_characters/_mapping
 
 ===
 
+### Ne pas indexer tous les champs ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-index.html))
+
+Il est possible de déclarer des champs comme ne devant pas être indexés.
+Il sera toujours possible de les requêter mais c'est contre-performant.
+
+```json
+{
+  "starwars_characters": {
+    "mappings": {
+      "properties": {
+        "affiliation": {
+          "type": "keyword",
+          "index": false
+        },
+        "name": {
+          "type": "text"
+        },
+        "quote": {
+          "type": "text"
+        },
+        "species": {
+          "type": "keyword"
+        }
+      }
+    }
+  }
+}
+```
+
+===
+
 ### `text` vs `keyword`
 
 Les données des champs `text` sont analysées pour être indexées en vue d'une recherche _full texte_ :
