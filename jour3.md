@@ -551,7 +551,7 @@ GET /_cluster/health?level=shards
 }
 ```
 
----
+===
 
 ### Nodes info ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-nodes-info.html))
 
