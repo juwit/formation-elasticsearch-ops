@@ -315,6 +315,20 @@ GET _snapshot/<repository>/<snapshot_name>/_status
 
 ===
 
+### Lister les _snapshot_
+
+```http request
+GET /_snapshot/my_repository/*
+```
+
+### Voir les détails d'un _snapshot_
+
+```http request
+GET /_snapshot/my_repository/<snapshot_name>
+```
+
+===
+
 ### Restaurer un _snapshot_
 
 On peut restaurer partiellement un _snapshot_ (un ou plusieurs _index_)
