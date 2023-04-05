@@ -339,13 +339,13 @@ GET _snapshot/<repository>/<snapshot_name>/_status
 
 ===
 
-### Lister les _snapshot_
+### Lister les _snapshot_ ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/8.7/get-snapshot-api.html))
 
 ```http request
 GET /_snapshot/my_repository/*
 ```
 
-### Voir les détails d'un _snapshot_
+### Voir les détails d'un _snapshot_ ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/8.7/get-snapshot-api.html))
 
 ```http request
 GET /_snapshot/my_repository/<snapshot_name>
@@ -353,7 +353,7 @@ GET /_snapshot/my_repository/<snapshot_name>
 
 ===
 
-### Restaurer un _snapshot_
+### Restaurer un _snapshot_ ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/8.7/restore-snapshot-api.html))
 
 On peut restaurer partiellement un _snapshot_ (un ou plusieurs _index_)
 
@@ -386,7 +386,7 @@ Va renommer `dragonball_characters` en `dragonball_index`.
 
 ===
 
-### Supprimer un _snapshot_
+### Supprimer un _snapshot_ ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/8.7/delete-snapshot-api.html))
 
 ```http request
 DELETE _snapshot/<repository>/<snapshot_name>
