@@ -199,6 +199,15 @@ A surveiller:
 }
 ```
 
+===
+
+### Dans Kibana
+
+Parcours des écrans ILM dans Kibana :
+
+* Dans _Management/Stack Management_
+* Menu _Data/Index Lifecycle Policies_
+
 ---
 
 ## Sauvegarde et Restauration
@@ -351,6 +360,8 @@ DELETE _snapshot/<repository>/<snapshot_name>/_restore
 
 Création automatique de snapshots.
 
+Scheduling via une expression crontab, et cible tout le cluster ou certains index.
+
 ===
 
 #### Créer une policy SLM
@@ -386,7 +397,7 @@ Supprimer une policy ne supprime pas les snapshots créés.
 
 ---
 
-## Sauvegarde et restauration
+## TP Sauvegarde et Restauration
 
 ![](assets/Coding-workshop.png)
 
@@ -416,11 +427,329 @@ Il existe un _snapshot repository_ `found-snapshots` sur le cluster.
 
 ### Correction de la sauvegarde et restauration
 
+On parcours les écrans dans Kibana.
+
 ![](assets/Certification.png)
 
 ---
 
-## Les API CAT (Compact & Aligned Text)
+## Les API Cluster ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster.html))
+
+Permettent de récupérer des données au niveau du cluster.
+
+===
+
+### Cluster Health
+
+La santé du cluster est disponible à travers une API :
+
+```http request
+GET /_cluster/health
+```
+```json
+{
+  "cluster_name": "54e949dcc17043dabbd8f20fa3fb67e7",
+  "status": "yellow",
+  "timed_out": false,
+  "number_of_nodes": 1,
+  "number_of_data_nodes": 1,
+  "active_primary_shards": 16,
+  "active_shards": 16,
+  "relocating_shards": 0,
+  "initializing_shards": 0,
+  "unassigned_shards": 2,
+  "delayed_unassigned_shards": 0,
+  "number_of_pending_tasks": 0,
+  "number_of_in_flight_fetch": 0,
+  "task_max_waiting_in_queue_millis": 0,
+  "active_shards_percent_as_number": 88.88888888888889
+}
+```
+
+===
+
+#### `green`, `yellow`, `red`
+
+* `green` : tout va bien
+* `yellow` : des _shards_ *replica* ne sont pas alloués à une machine, risque de perte de données si la machine portant le _shard_ primaire est perdue
+* `red` : des _shard_ *primaire* ne sont pas alloués
+
+===
+
+##### status `green`
+
+![](assets/elasticsearch-index-status-green.png)
+
+===
+
+##### status `yellow`
+
+![](assets/elasticsearch-index-status-yellow.png)
+
+===
+
+##### status `red`
+
+![](assets/elasticsearch-index-status-red.png)
+
+===
+
+#### Cluster Health Level
+
+Détails au niveau des index ou des shards :
+
+```http request
+GET /_cluster/health?level=indices
+
+GET /_cluster/health?level=shards
+```
+```json
+{
+  "cluster_name": "54e949dcc17043dabbd8f20fa3fb67e7",
+  "indices": {
+    "pokemons_gen1": {
+      "status": "yellow",
+      "number_of_shards": 1,
+      "number_of_replicas": 1,
+      "active_primary_shards": 1,
+      "active_shards": 1,
+      "relocating_shards": 0,
+      "initializing_shards": 0,
+      "unassigned_shards": 1,
+      "shards": {
+        "0": {
+          "status": "yellow",
+          "primary_active": true,
+          "active_shards": 1,
+          "relocating_shards": 0,
+          "initializing_shards": 0,
+          "unassigned_shards": 1
+        }
+      }
+    },
+    "pokemons_gen2": {
+      "status": "yellow",
+      "number_of_shards": 1,
+      "number_of_replicas": 1,
+      "active_primary_shards": 1,
+      "active_shards": 1,
+      "relocating_shards": 0,
+      "initializing_shards": 0,
+      "unassigned_shards": 1,
+      "shards": {
+        "0": {
+          "status": "yellow",
+          "primary_active": true,
+          "active_shards": 1,
+          "relocating_shards": 0,
+          "initializing_shards": 0,
+          "unassigned_shards": 1
+        }
+      }
+    }
+  }
+}
+```
+
+---
+
+### Nodes info ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-nodes-info.html))
+
+Permet de récupérer des informations (très) détaillées sur les nodes :
+
+```http request
+GET _nodes
+```
+```json
+{
+	"_nodes": {
+		"total": 2,
+		"successful": 2,
+		"failed": 0
+	},
+	"cluster_name": "54e949dcc17043dabbd8f20fa3fb67e7",
+	"nodes": {
+		"ot6bbHQJRqO49ee9K2rnZQ": {
+			"name": "instance-0000000000",
+			"transport_address": "10.43.255.116:19368",
+			"host": "10.43.255.116",
+			"ip": "10.43.255.116",
+			"version": "8.6.2",
+			"build_flavor": "default",
+			"build_type": "docker",
+			"build_hash": "2d58d0f136141f03239816a4e360a8d17b6d8f29",
+			"total_indexing_buffer": 53687091,
+			"roles": [
+				"data_content",
+				"data_hot",
+				"ingest",
+				"master",
+				"remote_cluster_client",
+				"transform"
+			],
+			"attributes": {
+				"xpack.installed": "true",
+				"logical_availability_zone": "zone-0",
+				"availability_zone": "europe-west1-b",
+				"region": "unknown-region",
+				"instance_configuration": "gcp.es.datahot.n2.68x16x45",
+				"server_name": "instance-0000000000.54e949dcc17043dabbd8f20fa3fb67e7",
+				"data": "hot"
+			}
+		},
+		"JSqRxcPRQ5mdKqeyz-bzSw": {
+			"name": "instance-0000000001",
+			"transport_address": "10.43.255.50:19482",
+			"host": "10.43.255.50",
+			"ip": "10.43.255.50",
+			"version": "8.6.2",
+			"build_flavor": "default",
+			"build_type": "docker",
+			"build_hash": "2d58d0f136141f03239816a4e360a8d17b6d8f29",
+			"total_indexing_buffer": 53687091,
+			"roles": [
+				"data_content",
+				"data_hot",
+				"ingest",
+				"master",
+				"remote_cluster_client",
+				"transform"
+			],
+			"attributes": {
+				"xpack.installed": "true",
+				"logical_availability_zone": "zone-1",
+				"availability_zone": "europe-west1-c",
+				"region": "unknown-region",
+				"instance_configuration": "gcp.es.datahot.n2.68x16x45",
+				"server_name": "instance-0000000001.54e949dcc17043dabbd8f20fa3fb67e7",
+				"data": "hot"
+			}
+		}
+	}
+}
+```
+
+===
+
+### Cluster allocation explain ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-allocation-explain.html))
+
+Cette API décrit les raisons de l'allocation d'un shard (ou pas) sur un node.
+
+Indispensable pour débugger.
+
+```http request
+GET _cluster/allocation/explain
+```
+```json
+{
+  "index": "pokemons_gen1",
+  "shard": 0,
+  "primary": true
+}
+```
+
+===
+
+```json
+{
+  "index": "pokemons_gen1",
+  "shard": 0,
+  "primary": true,
+  "current_state": "started",
+  "current_node": {
+    "id": "ot6bbHQJRqO49ee9K2rnZQ",
+    "name": "instance-0000000000",
+    "transport_address": "10.43.255.116:19368",
+    "attributes": {
+      "logical_availability_zone": "zone-0",
+      "xpack.installed": "true",
+      "data": "hot",
+      "server_name": "instance-0000000000.54e949dcc17043dabbd8f20fa3fb67e7",
+      "instance_configuration": "gcp.es.datahot.n2.68x16x45",
+      "region": "unknown-region",
+      "availability_zone": "europe-west1-b"
+    },
+    "weight_ranking": 1
+  },
+  "can_remain_on_current_node": "yes",
+  "can_rebalance_cluster": "no",
+  "can_rebalance_cluster_decisions": [
+    {
+      "decider": "rebalance_only_when_active",
+      "decision": "NO",
+      "explanation": "rebalancing is not allowed until all replicas in the cluster are active"
+    },
+    {
+      "decider": "cluster_rebalance",
+      "decision": "NO",
+      "explanation": "the cluster has unassigned shards and cluster setting [cluster.routing.allocation.allow_rebalance] is set to [indices_all_active]"
+    }
+  ],
+  "can_rebalance_to_other_node": "no",
+  "rebalance_explanation": "Elasticsearch is not allowed to allocate or rebalance this shard to another node. If you expect this shard to be rebalanced to another node, find this node in the node-by-node explanation and address the reasons which prevent Elasticsearch from rebalancing this shard there."
+}
+```
+
+===
+
+```http request
+GET _cluster/allocation/explain
+```
+```json
+{
+  "index": "pokemons_gen1",
+  "shard": 0,
+  "primary": false
+}
+```
+
+===
+
+```json
+{
+  "index": "pokemons_gen1",
+  "shard": 0,
+  "primary": false,
+  "current_state": "unassigned",
+  "unassigned_info": {
+    "reason": "INDEX_CREATED",
+    "at": "2023-03-29T12:13:56.797Z",
+    "last_allocation_status": "no_attempt"
+  },
+  "can_allocate": "no",
+  "allocate_explanation": "Elasticsearch isn't allowed to allocate this shard to any of the nodes in the cluster. Choose a node to which you expect this shard to be allocated, find this node in the node-by-node explanation, and address the reasons which prevent Elasticsearch from allocating this shard there.",
+  "node_allocation_decisions": [
+    {
+      "node_id": "ot6bbHQJRqO49ee9K2rnZQ",
+      "node_name": "instance-0000000000",
+      "transport_address": "10.43.255.116:19368",
+      "node_attributes": {
+        "logical_availability_zone": "zone-0",
+        "xpack.installed": "true",
+        "data": "hot",
+        "server_name": "instance-0000000000.54e949dcc17043dabbd8f20fa3fb67e7",
+        "instance_configuration": "gcp.es.datahot.n2.68x16x45",
+        "region": "unknown-region",
+        "availability_zone": "europe-west1-b"
+      },
+      "node_decision": "no",
+      "weight_ranking": 1,
+      "deciders": [
+        {
+          "decider": "same_shard",
+          "decision": "NO",
+          "explanation": "a copy of this shard is already allocated to this node [[pokemons_gen1][0], node[ot6bbHQJRqO49ee9K2rnZQ], [P], s[STARTED], a[id=PnrcdpYuQf-We28hBLgJnA], failed_attempts[0]]"
+        }
+      ]
+    }
+  ]
+}
+```
+
+---
+
+
+## Les API CAT (Compact & Aligned Text) ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/cat.html))
 
 Les API `_cat` sont destinées aux humains, pour la récupération d'infos sur les clusters.
 
@@ -428,7 +757,7 @@ Pratique depuis un browser, ou depuis un shell en `curl`.
 
 ===
 
-### Paramètres
+### Paramètres communs
 
 * `v` : mode verbose (entêtes)
 * `h` : filtrer les colonnes
@@ -437,7 +766,7 @@ Pratique depuis un browser, ou depuis un shell en `curl`.
 
 ===
 
-### `_cat/health`
+### `_cat/health` ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/cat-health.html))
 
 Santé du cluster
 
@@ -451,7 +780,7 @@ epoch      timestamp cluster                          status node.total node.dat
 
 ===
 
-### `_cat/indices`
+### `_cat/indices` ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/cat-indices.html))
 
 Liste des index avec leurs détails
 
@@ -466,7 +795,7 @@ yellow open   pokemons_gen2 V4V7pF9gTgmdtw95oJHrwA   1   1        100           
 
 ===
 
-### `_cat/shards`
+### `_cat/shards` ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/cat-shards.html))
 
 Liste des _shards_ (tous, ou ceux d'un index)
 
@@ -483,7 +812,7 @@ pokemons_gen2 0     r      UNASSIGNED
 
 ===
 
-### `_cat/nodes`
+### `_cat/nodes` ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/cat-nodes.html))
 
 Liste des _node_
 
@@ -514,6 +843,52 @@ instance-0000000000 10.43.255.116 10.43.255.116 instance_configuration    gcp.es
 instance-0000000000 10.43.255.116 10.43.255.116 region                    unknown-region
 instance-0000000000 10.43.255.116 10.43.255.116 availability_zone         europe-west1-b
 ```
+
+---
+
+## Observer l'allocation des shards
+
+* `_cat/shards` permet de récupérer la liste de tous les _shards_
+* `_cluster/allocation/explain` permet de requêter un _shard_ pour comprendre son allocation
+
+Utiliser les settings pour adapter le nombre de replicas ou les contraintes d'allocation
+
+---
+
+## TP API Cluster & CAT
+
+![](assets/Coding-workshop.png)
+
+===
+
+### Sujet
+
+On réutilise les mêmes index qu'hier :
+
+* pokemons_gen1
+* pokemons_gen2
+
+===
+
+### Observez la santé du cluster et des index
+
+* Quel est le statut du cluster ?
+* Quel est le statut de l'index `pokemons_gen1` ?
+* Quel est le statut de l'index `pokemons_gen2` ? Pourquoi ?
+
+===
+
+### Déterminer ce qui ne va pas
+
+* Quel est le statut des _shards_ de l'index `pokemons_gen2` ?
+* Utilisez _Cluster Allocation Explain_ pour comprendre pourquoi ?
+* Quelles pourraient être les actions correctives ?
+
+===
+
+### Correction
+
+![](assets/Certification.png)
 
 ---
 
@@ -802,237 +1177,6 @@ Pour stocker 1 To utile avec 1 replica, sur des nodes avec 500Go de disque, il f
 
 ---
 
-## Cluster Health
-
-La santé du cluster est disponible à travers une API :
-
-```http request
-GET /_cluster/health
-```
-```json
-{
-  "cluster_name": "54e949dcc17043dabbd8f20fa3fb67e7",
-  "status": "yellow",
-  "timed_out": false,
-  "number_of_nodes": 1,
-  "number_of_data_nodes": 1,
-  "active_primary_shards": 16,
-  "active_shards": 16,
-  "relocating_shards": 0,
-  "initializing_shards": 0,
-  "unassigned_shards": 2,
-  "delayed_unassigned_shards": 0,
-  "number_of_pending_tasks": 0,
-  "number_of_in_flight_fetch": 0,
-  "task_max_waiting_in_queue_millis": 0,
-  "active_shards_percent_as_number": 88.88888888888889
-}
-```
-
-===
-
-### `green`, `yellow`, `red`
-
-* `green` : tout va bien
-* `yellow` : des _shards_ *replica* ne sont pas alloués à une machine, risque de perte de données si la machine portant le _shard_ primaire est perdue
-* `red` : des _shard_ *primaire* ne sont pas alloués
-
-===
-
-#### status `green`
-
-![](assets/elasticsearch-index-status-green.png)
-
-===
-
-#### status `yellow`
-
-![](assets/elasticsearch-index-status-yellow.png)
-
-===
-
-#### status `red`
-
-![](assets/elasticsearch-index-status-red.png)
-
-===
-
-### Cluster Health Level
-
-Détails au niveau des index ou des shards :
-
-```http request
-GET /_cluster/health?level=indices
-
-GET /_cluster/health?level=shards
-```
-```json
-{
-  "cluster_name": "54e949dcc17043dabbd8f20fa3fb67e7",
-  "indices": {
-    "pokemons_gen1": {
-      "status": "yellow",
-      "number_of_shards": 1,
-      "number_of_replicas": 1,
-      "active_primary_shards": 1,
-      "active_shards": 1,
-      "relocating_shards": 0,
-      "initializing_shards": 0,
-      "unassigned_shards": 1,
-      "shards": {
-        "0": {
-          "status": "yellow",
-          "primary_active": true,
-          "active_shards": 1,
-          "relocating_shards": 0,
-          "initializing_shards": 0,
-          "unassigned_shards": 1
-        }
-      }
-    },
-    "pokemons_gen2": {
-      "status": "yellow",
-      "number_of_shards": 1,
-      "number_of_replicas": 1,
-      "active_primary_shards": 1,
-      "active_shards": 1,
-      "relocating_shards": 0,
-      "initializing_shards": 0,
-      "unassigned_shards": 1,
-      "shards": {
-        "0": {
-          "status": "yellow",
-          "primary_active": true,
-          "active_shards": 1,
-          "relocating_shards": 0,
-          "initializing_shards": 0,
-          "unassigned_shards": 1
-        }
-      }
-    }
-  }
-}
-```
-
-===
-
-### Cluster allocation explain
-
-Cette API décrit les raisons de l'allocation d'un shard (ou pas) sur un node.
-
-Indispensable pour débugger.
-
-```http request
-GET _cluster/allocation/explain
-```
-```json
-{
-  "index": "pokemons_gen1",
-  "shard": 0,
-  "primary": true
-}
-```
-
-===
-
-```json
-{
-  "index": "pokemons_gen1",
-  "shard": 0,
-  "primary": true,
-  "current_state": "started",
-  "current_node": {
-    "id": "ot6bbHQJRqO49ee9K2rnZQ",
-    "name": "instance-0000000000",
-    "transport_address": "10.43.255.116:19368",
-    "attributes": {
-      "logical_availability_zone": "zone-0",
-      "xpack.installed": "true",
-      "data": "hot",
-      "server_name": "instance-0000000000.54e949dcc17043dabbd8f20fa3fb67e7",
-      "instance_configuration": "gcp.es.datahot.n2.68x16x45",
-      "region": "unknown-region",
-      "availability_zone": "europe-west1-b"
-    },
-    "weight_ranking": 1
-  },
-  "can_remain_on_current_node": "yes",
-  "can_rebalance_cluster": "no",
-  "can_rebalance_cluster_decisions": [
-    {
-      "decider": "rebalance_only_when_active",
-      "decision": "NO",
-      "explanation": "rebalancing is not allowed until all replicas in the cluster are active"
-    },
-    {
-      "decider": "cluster_rebalance",
-      "decision": "NO",
-      "explanation": "the cluster has unassigned shards and cluster setting [cluster.routing.allocation.allow_rebalance] is set to [indices_all_active]"
-    }
-  ],
-  "can_rebalance_to_other_node": "no",
-  "rebalance_explanation": "Elasticsearch is not allowed to allocate or rebalance this shard to another node. If you expect this shard to be rebalanced to another node, find this node in the node-by-node explanation and address the reasons which prevent Elasticsearch from rebalancing this shard there."
-}
-```
-
-===
-
-```http request
-GET _cluster/allocation/explain
-```
-```json
-{
-  "index": "pokemons_gen1",
-  "shard": 0,
-  "primary": false
-}
-```
-
-===
-
-```json
-{
-  "index": "pokemons_gen1",
-  "shard": 0,
-  "primary": false,
-  "current_state": "unassigned",
-  "unassigned_info": {
-    "reason": "INDEX_CREATED",
-    "at": "2023-03-29T12:13:56.797Z",
-    "last_allocation_status": "no_attempt"
-  },
-  "can_allocate": "no",
-  "allocate_explanation": "Elasticsearch isn't allowed to allocate this shard to any of the nodes in the cluster. Choose a node to which you expect this shard to be allocated, find this node in the node-by-node explanation, and address the reasons which prevent Elasticsearch from allocating this shard there.",
-  "node_allocation_decisions": [
-    {
-      "node_id": "ot6bbHQJRqO49ee9K2rnZQ",
-      "node_name": "instance-0000000000",
-      "transport_address": "10.43.255.116:19368",
-      "node_attributes": {
-        "logical_availability_zone": "zone-0",
-        "xpack.installed": "true",
-        "data": "hot",
-        "server_name": "instance-0000000000.54e949dcc17043dabbd8f20fa3fb67e7",
-        "instance_configuration": "gcp.es.datahot.n2.68x16x45",
-        "region": "unknown-region",
-        "availability_zone": "europe-west1-b"
-      },
-      "node_decision": "no",
-      "weight_ranking": 1,
-      "deciders": [
-        {
-          "decider": "same_shard",
-          "decision": "NO",
-          "explanation": "a copy of this shard is already allocated to this node [[pokemons_gen1][0], node[ot6bbHQJRqO49ee9K2rnZQ], [P], s[STARTED], a[id=PnrcdpYuQf-We28hBLgJnA], failed_attempts[0]]"
-        }
-      ]
-    }
-  ]
-}
-```
-
----
-
 ## Monitoring d'un cluster
 
 ### Disques
@@ -1171,6 +1315,12 @@ Monitorer la bonne allocation des shards :
 
 ```http request
 GET _cluster/health?level=shards
+```
+
+ou
+
+```http request
+GET _cat/shards
 ```
 
 En cas de shard `yellow`, utiliser le cluster allocation explain pour trouver la cause:
