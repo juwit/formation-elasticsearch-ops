@@ -799,8 +799,15 @@ Pratique depuis un browser, ou depuis un shell en `curl`.
 
 * `v` : mode verbose (entêtes)
 * `h` : filtrer les colonnes
+* `help` : liste les colonnes dispos
 * `format` : `text`, `json`, `yaml`
 * `sort` : tri
+
+à positionner dans les URL :
+
+```http request
+GET _cat/health?v&h=name,status
+```
 
 ===
 
