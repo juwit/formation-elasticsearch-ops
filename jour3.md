@@ -129,8 +129,6 @@ Peut aussi être précisé dans un _index template_.
 
 ### Surveiller l'exécution d'une policy ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/ilm-explain-lifecycle.html))
 
-Il est possible d'obtenir des infos sur l'execution d'une ILM sur un index (succès/erreurs) :
-
 ```http request
 GET dragonball_characters/_ilm/explain
 ```
@@ -195,6 +193,32 @@ A surveiller:
     "reason": "index [test-000057/H7lF9n36Rzqa-KfKcnGQMg] blocked by: [FORBIDDEN/5/index read-only (api)",
     "index_uuid": "H7lF9n36Rzqa-KfKcnGQMg",
     "index": "test-000057"
+  }
+}
+```
+
+===
+
+### Forcer une exécution de _phase_ ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/8.7/ilm-move-to-step.html))
+
+Il est possible de forcer l'exécution d'une phase de policy pour un index.
+
+Les `current_step` `phase`, `action` et `name` peuvent être récupérés avec un `GET <index>/_ilm/explain`.
+
+===
+
+```http request
+POST _ilm/move/<index>
+```
+```json
+{
+  "current_step": {
+    "phase": "hot",
+    "action": "complete",
+    "name": "complete"
+  },
+  "next_step": {
+    "phase": "warm"
   }
 }
 ```
