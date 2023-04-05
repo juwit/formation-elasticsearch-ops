@@ -947,7 +947,19 @@ Des machines de type différentes, hardware différent, disques différents.
 
 ===
 
-### `node.roles: [ master ]`
+### `node.roles: []` ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html#coordinating-node))
+
+Un node sans aucun _rôle_ sera _coordinator only_.
+
+Par défaut, tous les _node_ data sont _coordinator_.
+
+Un node _coordinator only_ ne sert qu'a exécuter/distribuer des requêtes.
+
+Ces nodes ne doivent pas être utilisés pour indexer les données.
+
+===
+
+### `node.roles: [ master ]` ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html#dedicated-master-node))
 
 Contrôle le cluster, suit les _node_, décide d'allouer des shards à des _node_.
 
