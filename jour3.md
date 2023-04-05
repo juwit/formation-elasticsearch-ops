@@ -199,7 +199,7 @@ A surveiller:
 
 ===
 
-### Forcer une exécution de _phase_ ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/8.7/ilm-move-to-step.html))
+### Forcer une exécution de _phase_ ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/ilm-move-to-step.html))
 
 Il est possible de forcer l'exécution d'une phase de policy pour un index.
 
@@ -339,13 +339,13 @@ GET _snapshot/<repository>/<snapshot_name>/_status
 
 ===
 
-### Lister les _snapshot_ ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/8.7/get-snapshot-api.html))
+### Lister les _snapshot_ ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/get-snapshot-api.html))
 
 ```http request
 GET /_snapshot/my_repository/*
 ```
 
-### Voir les détails d'un _snapshot_ ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/8.7/get-snapshot-api.html))
+### Voir les détails d'un _snapshot_ ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/get-snapshot-api.html))
 
 ```http request
 GET /_snapshot/my_repository/<snapshot_name>
@@ -353,7 +353,7 @@ GET /_snapshot/my_repository/<snapshot_name>
 
 ===
 
-### Restaurer un _snapshot_ ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/8.7/restore-snapshot-api.html))
+### Restaurer un _snapshot_ ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/restore-snapshot-api.html))
 
 On peut restaurer partiellement un _snapshot_ (un ou plusieurs _index_)
 
@@ -386,7 +386,7 @@ Va renommer `dragonball_characters` en `dragonball_index`.
 
 ===
 
-### Supprimer un _snapshot_ ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/8.7/delete-snapshot-api.html))
+### Supprimer un _snapshot_ ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/delete-snapshot-api.html))
 
 ```http request
 DELETE _snapshot/<repository>/<snapshot_name>
@@ -402,7 +402,7 @@ Scheduling via une expression crontab, et cible tout le cluster ou certains inde
 
 ===
 
-#### Créer une policy SLM ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/8.7/slm-api-put-policy.html))
+#### Créer une policy SLM ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/slm-api-put-policy.html))
 
 ```http request
 PUT _slm/policy/<name>
@@ -477,7 +477,7 @@ Permettent de récupérer des données au niveau du cluster.
 
 ===
 
-### Cluster Health
+### Cluster Health ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-health.html))
 
 La santé du cluster est disponible à travers une API :
 
@@ -864,7 +864,7 @@ ip            heap.percent ram.percent cpu load_1m load_5m load_15m node.role ma
 
 ===
 
-### `_cat/nodeattrs`
+### `_cat/nodeattrs` ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/cat-nodeattrs.html))
 
 Liste des attributs de nodes (role et custom)
 
@@ -930,7 +930,7 @@ On réutilise les mêmes index qu'hier :
 
 ---
 
-## Les rôles d'un node
+## Les rôles d'un node ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html))
 
 ### Un cluster hétérogène
 
@@ -950,7 +950,7 @@ Préco Elasticsearch : des _node_ `master` dédiés à partir de 5 ou 6 _node_
 
 === 
 
-### `node.roles: [ master, voting_only ]`
+### `node.roles: [ master, voting_only ]` ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html#voting-only-node))
 
 Participe aux votes pour l'élection d'un _node_ master.
 
@@ -958,7 +958,7 @@ Permet de limiter le nombre de _node_ `master` dédié, en permettant à un _nod
 
 ===
 
-### `node.roles: [ data ]`
+### `node.roles: [ data ]` ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html#data-node))
 
 Stocker des données et traite des requêtes.
 
@@ -1023,7 +1023,7 @@ Données archivées sous la forme de snapshots, les données restent toujours re
 
 ===
 
-### Let the JVM be
+### Let the JVM be ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/advanced-configuration.html#set-jvm-heap-size))
 
 Laisser Elasticsearch allouer la mémoire de la machine pour la JVM.
 
@@ -1139,7 +1139,7 @@ echo net.ipv4.tcp_retries2=5 | tee /etc/sysctl.d/99-tcp_retries2.conf
 
 ===
 
-#### Filesystem `/tmp` exécutable
+#### Filesystem `/tmp` exécutable ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/executable-jna-tmpdir.html))
 
 Elasticsearch utilise du code natif (JNA - Java Native Access)
 
@@ -1178,7 +1178,7 @@ Les ratios pratiqués par Elasticsearch sur Elastic Cloud sont un bon point de d
 
 ===
 
-### CPU - Éléments à prendre en compte
+### CPU - Éléments à prendre en compte ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-threadpool.html))
 
 Elasticsearch utilise des pool de threads pour l'indexation et la recherche.
 
@@ -1217,7 +1217,7 @@ Pour stocker 1 To utile avec 1 replica, sur des nodes avec 500Go de disque, il f
 
 ## Monitoring d'un cluster
 
-### Disques
+### Disques ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-cluster.html#disk-based-shard-allocation))
 
 Elasticsearch monitore la consommation de disque sur chaque node :
 
@@ -1376,7 +1376,7 @@ GET _cluster/allocation/explain
 
 ---
 
-## Maintenance des nodes
+## Maintenance des nodes ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/put-shutdown.html))
 
 Préparation au shutdown
 
@@ -1459,7 +1459,7 @@ PUT _nodes/<node-id>/shutdown
 
 ===
 
-Jouer un GET pour savoir quand toutes les réallocations ont été faites
+Jouer un GET pour savoir quand toutes les réallocations ont été faites ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/get-shutdown.html))
 
 ```http request
 GET _nodes/<node-id>/shutdown
