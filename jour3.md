@@ -947,36 +947,6 @@ Des machines de type différentes, hardware différent, disques différents.
 
 ===
 
-### `node.roles: []` ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html#coordinating-node))
-
-Un node sans aucun _rôle_ sera _coordinator only_.
-
-Par défaut, tous les _node_ data sont _coordinator_.
-
-Un node _coordinator only_ ne sert qu'a exécuter/distribuer des requêtes.
-
-Ces nodes ne doivent pas être utilisés pour indexer les données.
-
-===
-
-### `node.roles: [ master ]` ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html#dedicated-master-node))
-
-Contrôle le cluster, suit les _node_, décide d'allouer des shards à des _node_.
-
-Ces _node_ ne stockent que des données de metadata.
-
-Préco Elasticsearch : des _node_ `master` dédiés à partir de 5 ou 6 _node_
-
-=== 
-
-### `node.roles: [ master, voting_only ]` ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html#voting-only-node))
-
-Participe aux votes pour l'élection d'un _node_ master.
-
-Permet de limiter le nombre de _node_ `master` dédié, en permettant à un _node_ `data` de participer aux élections.
-
-===
-
 ### `node.roles: [ data ]` ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html#data-node))
 
 Stocker des données et traite des requêtes.
@@ -1030,6 +1000,37 @@ Données qui ne sont plus souvent requêtées, on optimise le cout de stockage, 
 ![](assets/elasticsearch-tiering.png)
 
 Données archivées sous la forme de snapshots, les données restent toujours requêtables, mais les requêtes sont très longues.
+
+===
+
+### `node.roles: [ master ]` ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html#dedicated-master-node))
+
+Contrôle le cluster, suit les _node_, décide d'allouer des shards à des _node_.
+
+Ces _node_ ne stockent que des données de metadata.
+
+Préco Elasticsearch : des _node_ `master` dédiés à partir de 5 ou 6 _node_
+
+===
+
+### `node.roles: [ master, voting_only ]` ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html#voting-only-node))
+
+Participe aux votes pour l'élection d'un _node_ master.
+
+Permet de limiter le nombre de _node_ `master` dédié, en permettant à un _node_ `data` de participer aux élections.
+
+===
+
+### `node.roles: []` ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html#coordinating-node))
+
+Un node sans aucun _rôle_ sera _coordinator only_.
+
+Par défaut, tous les _node_ data sont _coordinator_.
+
+Un node _coordinator only_ ne sert qu'a exécuter/distribuer des requêtes.
+
+Ces nodes ne doivent pas être utilisés pour indexer les données.
+
 
 ---
 
