@@ -109,7 +109,21 @@ PUT _ilm/policy/<my_policy>
 
 ### Assignation d'une policy à un index ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/master/set-up-lifecycle-policy.html#apply-policy-manually))
 
-[//]: # (TODO)
+Utiliser le _settings_ `index.lifecycle.name` pour préciser la policy d'un index :
+
+```http request
+PUT dragonball_characters/_settings
+```
+```json
+{
+  "settings": {
+    "index.lifecycle.name": "<policy name>",
+    "index.lifecycle.rollover_alias": "<rollover alias name>>"
+  }
+}
+```
+
+Peut aussi être précisé dans un _index template_.
 
 ===
 
