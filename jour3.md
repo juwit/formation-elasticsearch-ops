@@ -402,7 +402,7 @@ Scheduling via une expression crontab, et cible tout le cluster ou certains inde
 
 ===
 
-#### Créer une policy SLM
+#### Créer une policy SLM ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/8.7/slm-api-put-policy.html))
 
 ```http request
 PUT _slm/policy/<name>
