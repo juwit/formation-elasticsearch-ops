@@ -1034,6 +1034,22 @@ Ces nodes ne doivent pas être utilisés pour indexer les données.
 
 ---
 
+### Une architecture complète
+
+![](assets/elasticsearch-sample-architecture.png) <!-- .element style="width: 50%" -->
+
+===
+
+### Bonnes pratiques
+
+* indexation directe sur les nodes `data`
+* utiliser les nodes `coordinating only` uniquement pour la recherche
+* positionner des load-balancer ou des VIP devant les nodes concernés
+* pas besoin de load-balancing devant des nodes `master` dédiés
+
+
+---
+
 ## Bonnes pratiques d'installation
 
 * Elasticsearch doit être le seul service qui tourne sur une machine (VM ou bare-metal)
