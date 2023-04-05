@@ -427,9 +427,6 @@ GET /_analyze
 
 `standard`, `english`, `french`, ...
 
-```http request
-GET /_analyze
-```
 ```json
 {
   "analyzer" : "english",
