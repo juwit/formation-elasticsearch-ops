@@ -1436,3 +1436,9 @@ GET _nodes/<node-id>/shutdown
   },
 }
 ```
+
+---
+
+## C'est fini pour la formation !
+
+![](assets/Successful-task-completed.png)
