@@ -18,7 +18,7 @@
 
 ---
 
-## Index Lifecycle Management (ILM)
+## Index Lifecycle Management (ILM) ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/index-lifecycle-management.html))
 
 Gestion de la vie des index :
 
@@ -28,7 +28,7 @@ Gestion de la vie des index :
 
 ===
 
-### Phases
+### Phases ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/ilm-index-lifecycle.html))
 
 ILM définit des _phases_ :
 
@@ -40,7 +40,7 @@ Les transitions entre les phases sont temporelles (en jours).
 
 ===
 
-### Actions
+### Actions ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/ilm-actions.html))
 
 Dans chaque _phase_, ILM peut :
 
@@ -69,7 +69,7 @@ Toutes les phases ne supportent pas toutes les actions :
 
 ===
 
-### Création d'une policy en REST
+### Création d'une policy en REST ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/ilm-put-lifecycle.html))
 
 ```http request
 PUT _ilm/policy/<my_policy>
@@ -107,15 +107,15 @@ PUT _ilm/policy/<my_policy>
 
 ===
 
-### Assignation d'une policy à un index
+### Assignation d'une policy à un index ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/master/set-up-lifecycle-policy.html#apply-policy-manually))
 
 [//]: # (TODO)
 
 ===
 
-### Surveiller l'exécution d'une policy
+### Surveiller l'exécution d'une policy ([doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/ilm-explain-lifecycle.html))
 
-Il est possible d'obtenir des infos sur l'execution d'une ILM sur un index :
+Il est possible d'obtenir des infos sur l'execution d'une ILM sur un index (succès/erreurs) :
 
 ```http request
 GET dragonball_characters/_ilm/explain
