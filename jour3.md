@@ -418,7 +418,6 @@ Il existe un _snapshot repository_ `found-snapshots` sur le cluster.
 
 ![](assets/Certification.png)
 
-===
 ---
 
 ## Les API CAT (Compact & Aligned Text)
