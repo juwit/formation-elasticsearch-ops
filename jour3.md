@@ -365,7 +365,7 @@ Va renommer `dragonball_characters` en `dragonball_index`.
 ### Supprimer un _snapshot_
 
 ```http request
-DELETE _snapshot/<repository>/<snapshot_name>/_restore
+DELETE _snapshot/<repository>/<snapshot_name>
 ```
 
 ===
